@@ -1,0 +1,50 @@
+{
+  "compilerOptions": {
+
+    "target": "ESNext",
+    "strict": false,
+    "noImplicitAny": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "allowUmdGlobalAccess": true,
+    "newLine": "lf",
+    "baseUrl":".",
+
+
+
+
+
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "paths": {
+          "@/*": [
+            "./src/*"
+          ]
+    }
+  },
+
+  "ts-node": {
+    "require": [
+      "tsconfig-paths/register"
+    ],
+    "esm": true
+  },
+
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "exclude": ["node_modules"]
+}

@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["clientExtensions"]
+}
+
+// Sometimes errors, sometimes takes forever
+// Nice idea - retry before final delivery
+//generator dbml {
+//  provider = "prisma-dbml-generator"
+//}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Signiflyer {
+  id            Int           @id @default(autoincrement())
+  email         String        @unique
+  name          String
+  expertises    String        @default("")
+  tools         String        @default("")
+  availableFrom DateTime
+  yrs_exp_gen   Int
+  yrs_exp_sig   Int
+  about         String        @default("Very Good")
+  img           String
+  //project       Project? @relation(fields: [projectId], references: [id])
+  education     String?
+  //projectId     Int?
+  requirements  Requirement[]
+}
+
+//Expertise: Manager BackendDeveloper FrontendDeveloper DevOps UXDesigner Architect
+
+//Tools/Technologies - MSOffice JavaScript PHP, etc
+
+model Project {
+  id           Int           @id @default(autoincrement())
+  from         DateTime
+  to           DateTime
+  name         String
+  //signiflyers  Signiflyer[] // The team
+  requirements Requirement[]
+  customer     Customer      @relation(fields: [customerId], references: [id])
+  customerId   Int
+}
+
+model Customer {
+  id       Int       @id @default(autoincrement())
+  name     String
+  projects Project[]
+  about    String    @default("An important client")
+}
+
+//Resource requirements per project
+model Requirement {
+  id           Int         @id @default(autoincrement())
+  project      Project     @relation(fields: [projectId], references: [id])
+  education    String?
+  tool         String?     @default("")
+  expertise    String?
+  yrs_exp_gen  Int
+  yrs_exp_sig  Int
+  about        String?     @default("Details about this requirement")
+  projectId    Int
+  //signiflyers   Signiflyer[]
+  signiflyer   Signiflyer? @relation(fields: [signiflyerId], references: [id])
+  signiflyerId Int?
+}
+
+//
+//Education   selftaught, BS MS PhD
+
+//model Team {
+//id Int @id @default(autoincrement())
+//}
