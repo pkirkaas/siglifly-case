@@ -4,7 +4,7 @@ import { StaticRouter } from 'react-router-dom/server'
 import '../App.scss'
 import  axios  from 'axios';
 import {  getCustomerData,  GenObj,  } from './init.js';
-import {   Client, TstJson} from '../components/components.jsx';
+import {   Client, TstJson, RenderArr} from '../components/components.jsx';
 export function Front() {
   let [ares, setAres] = useState({});
 	let [inited, setInited] = useState(0);
@@ -27,6 +27,7 @@ export function Front() {
 	return (
     <div >
 		<h1>This is the front page!</h1>
+      <RenderArr arr={ares} label="More Clients" Comp={Client} />
       <TstJson data={ares} label="Clients & Projects" />
 
     </div>

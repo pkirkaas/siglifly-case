@@ -25,30 +25,47 @@ export function RenderArr(props) {
   let label = props.label;
   let Comp = props.Comp;
   let arr:any[] = props.arr;
-  let lableClass = props.labelClass ?? 'clabel';
+  let labelClass = props.labelClass ?? 'clabel';
   let wrapClass = props.wrapClass ?? 'bpm';
   let arrClass = props.arrClass ?? 'bpm2'
   let compClass = props.compClass ?? 'crow';
   let arrOut = (<div className='crow'>...Waiting</div>);
+  console.log("In RenderArr", { arr });
   if (Array.isArray(arr)) {
     let myArr: any[] = arr;
+
+    //@ts-ignore
+     arrOut = myArr.map((el, idx) => {
+       console.log('In RenderArrMap:', { el });
+       return (<div key={idx}>{Comp({ key: idx, ...el, className: compClass })}</div>)
+    });
+  }
+  return (
+    <div className={wrapClass}>
+      <div className={labelClass}>{label}</div>
+      <div className={arrClass}>{arrOut}</div>
+    </div>
+  );
+
+
     //let barrOut = (<h1>IT IS AN ARRAY!</h1>);
+    /*
      let barrOut = (
       {
-        //@ts-ignore
-        let newArr = myArr.map((el, idx) => (
-          <Comp key={idx} {...el} className={compClass} />
-        )
+         myArr.map((el, idx) => {
+           (Comp key={idx} {...el} className={compClass} />)
+         }
         )
       }
     )
+    */
      /*
       */
-  }
-  return (arrOut);
+//  return (arrOut);
 }
 
 
+           //(<Comp key={idx} {...el} className={compClass} />)
 
 
 export function TstJson(props) {
