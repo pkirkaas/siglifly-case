@@ -30,6 +30,18 @@ export function RenderArr(props) {
   let arrClass = props.arrClass ?? 'bpm2'
   let compClass = props.compClass ?? 'crow';
   let arrOut = (<div className='crow'>...Waiting</div>);
+  if (Array.isArray(arr)) {
+    let myArr: any[] = arr;
+    let barrOut = (
+      {
+        //@ts-ignore
+        myArr.map((el, idx) => (
+          <Comp key={idx} {...el} className={compClass} />
+        )
+        )
+      }
+    )
+  }
   /*
   if (Array.isArray(arr)) {
     let myArr: any[] = arr;
