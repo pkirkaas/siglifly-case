@@ -30,6 +30,11 @@ dist-ssr
 
 #prisma artifacts
 /prisma/migrations
+case-api/prisma/migrations
+/case-api/prisma/migrations
+/case-api/prisma/migrations/*
+./case-api/prisma/migrations
+prisma/migrations/*
 # testing
 /coverage
 

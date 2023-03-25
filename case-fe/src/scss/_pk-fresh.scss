@@ -1,0 +1,882 @@
+@use "sass:color";
+
+// Default body & HTML:
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+body, html, #root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+/*
+#root, body, html, .App {
+  height: 100%;
+}
+body {
+  //min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+html {
+  display: flex;
+  flex-direction: column;
+  background: #567;
+  min-height: 100vh;
+}
+.App {
+  display: flex;
+  flex-direction: column;
+  background: #aaf;
+  flex-grow: 1;
+}
+
+#root {
+  background: #afe;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+*/
+/**
+* 29 Apr 2022 - SO MUCH complicated un-necessary stuff gathered over the years - but some
+* good stuff too. So starting fresh here.
+* _pk-utility.scss - contains all my previous SCSS,
+* _pk-variables.scss containst site CSS variables -
+* But here only copy from utility what I need, but keep utilities in this
+* directory for reference including from _pk-utility.scss when I 
+* see the point.
+* Start by using mixins to build several micro-classes we extend/include to build other classes
+* Generated mixin classes start w. .mx-
+* Section 1: Mixins for individual components
+* Section 1A:   Appearance Mixins - border, colors, etc
+* Section 1B:   Sizing/Spacing Mixins - padding, size, etc
+* Section 1C: Layout/Flow mixins - display, flex, etc
+
+* Section 2: Mixins for component groups - pairs, label w. input, etc
+* Section 3: 
+*/
+// Functions:
+//In SCSS, '' & 0 are true
+@function empty($value) {
+  @if not($value) or $value == "" or $value == 0 or $value == () or length($value) == 0 {
+    @return true;
+  }
+  @return false;
+}
+
+//Gotta get some standard label/input/value templates here...
+//Start w. .pk-pair as wrapper - contains label & either input or val field
+//Where pk-inp & pk-val are subclasses of pk-data
+//Side by side or label over input/val
+//Label can be fixed width, input/val can grow or be fixed
+.verdana {
+  font-family: verdana;
+}
+.oswald {
+  font-family: "Oswald", verdana;
+}
+.lato {
+  font-family: "Lato", arial;
+}
+.arial {
+  font-family: "Arial";
+}
+.roboto {
+  font-family: "Roboto", verdana;
+}
+.open-sans {
+  font-family: "Open Sans", verdana;
+}
+.montserrat {
+  font-family: "Montserrat", verdana;
+}
+.raleway {
+  font-family: "Raleway", verdana;
+}
+.georgia {
+  font-family: "Georgia", verdana;
+}
+.garamond {
+  font-family: "Garamond", verdana;
+}
+.courrier {
+  font-family: "Courrier New";
+}
+.tnr {
+  font-family: "Times New Roman";
+}
+.droid-sans {
+  font-family: "Droid Sans", verdana;
+}
+
+//Defaults over-ridden in individual site SCSS's
+$pkp-pair-border: #aaa !default;
+$pkp-pair-border-radius: 0 !default;
+$pkp-pair-pad: 0.1em 0.1em !default;
+$pkp-pair-bg: transparent !default;
+$pkp-pair-mg: 0.1em 0.1em !default;
+$pkp-lbl-color: #008 !default;
+$pkp-lbl-wght: 400 !default;
+$pkp-lbl-pad: 0.05em 0.1em !default;
+$pkp-lbl-mg: 0.05em 0.1em !default;
+$pkp-data-color: #404 !default;
+$pkp-data-bg: #fff !default;
+$pkp-data-pad: 0.05em 0.1em !default;
+$pkp-data-mg: 0.05em 0.05em !default;
+
+//Site vars
+$site-lbl-color: #fff !default;
+$site-lbl-background-color: #008 !default;
+$site-val-color: #422 !default;
+$site-negative-value-color: #a22 !default;
+$grid-breakpoints: (
+  xs: 0,
+  sm: 544px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+) !default;
+$grid-columns: 12 !default;
+$grid-gutter-width: 1.875rem !default; // 30px
+$inner-border-color: #888 !default;
+$inner-border-spread: 1px !default;
+
+// Section 1A - Appearance mixins - borders, colors, etc
+@mixin mk-border($color: black, $width: 1px, $style: solid, $radius: null) {
+  border: $style $color $width;
+  @if $radius {
+    border-radius: $radius;
+  }
+}
+
+@mixin spacing($spacing: 5px) {
+  margin: $spacing;
+  padding: $spacing;
+}
+
+@mixin h-padding($sz: auto) {
+  padding-left: $sz;
+  padding-right: $sz;
+}
+
+@mixin v-padding($sz: auto) {
+  padding-top: $sz;
+  padding-bottom: $sz;
+}
+
+.rsz-content {
+  width: 100%;
+  height: 100%;
+}
+
+@mixin v-margin($sz: auto) {
+  margin-top: $sz;
+  margin-bottom: $sz;
+}
+
+@mixin h-margin($sz: auto) {
+  margin-left: $sz;
+  margin-right: $sz;
+}
+
+// Sizing
+@mixin fs-rem($sz) {
+  //Font size in rem
+  //  font-size: $sz + #{"rem"};
+  @include fs($sz, $unit: "rem");
+}
+
+@mixin fs-pc($sz) {
+  //Font size in %
+  //font-size: $sz + #{"%"};
+  @include fs($sz, $unit: "%");
+}
+
+@mixin mk-min ($width:10rem, $height:null) {
+  @if empty($height) {
+    $height:$width;
+  }
+  min-height: $height;
+  min-width: $width;
+}
+
+@mixin mk-full {
+  height: 100%;
+  width: 100%;
+}
+
+@mixin fs($sz, $unit: rem) {
+  font-size: $sz + $unit;
+}
+
+@function lighten($color, $lightness: 50%) {
+  @return color.scale($color, $lightness: $lightness);
+}
+
+@function darken($color, $darkness: 50%) {
+  @return lighten($color, $lightness: -$darkness);
+}
+
+//@function fcolor($lightness:50%, $
+
+// Scales spacing, font-size
+@mixin scale($sz: 1rem) {
+  @include fs-rem($sz);
+  @include spacing($sz);
+}
+
+/** Makes text/section wrappers, with MAP args/defaults:
+ * boxshadow: default for the mk-boxshadow mixin
+ * border: the border color, or false
+ * background: the background color, or false
+ * align: text alignment of the contained text - left, right, center
+ * v-padding: 1em
+ * h-padding: null
+ * v-margin: 1em
+ * h-margin: null
+ * border-radius: null
+ * margin: null, if present, overrides v & h margin
+ * padding: null, if present, overrides v & h padding
+ */
+
+@mixin mk-wrapper($args: ()) {
+  $defaults: (
+    boxshadow: true,
+    border: #aaa,
+    background: rgba(230, 240, 250, 0.3),
+    v-padding: 1em,
+    v-margin: 1em,
+    border-radius: 5px,
+  );
+  $params: map-merge($defaults, $args);
+
+  $align: map-get($params, align);
+  $boxshadow: map-get($params, boxshadow);
+  $border: map-get($params, border);
+  $border-radius: map-get($params, border-radius);
+  $background: map-get($params, background);
+  $padding: map-get($params, padding);
+  $margin: map-get($params, margin);
+  $h-padding: map-get($params, h-padding);
+  $h-margin: map-get($params, h-margin);
+  $v-padding: map-get($params, v-padding);
+  $v-margin: map-get($params, v-margin);
+
+  @if $border {
+    border: solid $border 1px;
+    border-radius: $border-radius;
+  }
+  @if $align {
+    text-align: $align;
+  }
+  @if $background {
+    background: $background;
+  }
+  @if $boxshadow {
+    @include mk-boxshadow($boxshadow);
+  }
+  @if $padding {
+    padding: $padding;
+  } @else {
+    @if $h-padding {
+      @include h-padding($h-padding);
+    }
+    @if $v-padding {
+      @include v-padding($v-padding);
+    }
+  }
+  @if $margin {
+    margin: $margin;
+  } @else {
+    @if $h-margin {
+      @include h-margin($h-margin);
+    }
+    @if $v-margin {
+      @include v-margin($v-margin);
+    }
+  }
+}
+
+@mixin mk-boxshadow($map: ()) {
+  @if not(empty($map)) {
+    @if $map == true {
+      box-shadow: 1rem 1rem 3rem -1rem rgba(0, 0, 0, 0.5);
+    }
+  }
+}
+@mixin mk-textshadow($map: ()) {
+  @if not(empty($map)) {
+    @if $map == true {
+      text-shadow: 0.1rem 0.1rem 0.3rem rgba(0, 0, 0, 0.5);
+    }
+  }
+}
+
+/** Makes text/section wrappers, with MAP args/defaults:
+ * boxshadow: default for the mk-boxshadow mixin
+ * border: the border color, or false
+ * background: the background color, or false
+ * align: text alignment of the contained text - left, right, center
+ * v-padding: 1em
+ * h-padding: null
+ * v-margin: 1em
+ * h-margin: null
+ * border-radius: null
+ * margin: null, if present, overrides v & h margin
+ * padding: null, if present, overrides v & h padding
+ */
+
+@mixin mk-wrapper($args: ()) {
+  $defaults: (
+    boxshadow: true,
+    border: #aaa,
+    background: rgba(230, 240, 250, 0.3),
+    v-padding: 1em,
+    v-margin: 1em,
+    border-radius: 5px,
+  );
+  $params: map-merge($defaults, $args);
+
+  $align: map-get($params, align);
+  $boxshadow: map-get($params, boxshadow);
+  $border: map-get($params, border);
+  $border-radius: map-get($params, border-radius);
+  $background: map-get($params, background);
+  $padding: map-get($params, padding);
+  $margin: map-get($params, margin);
+  $h-padding: map-get($params, h-padding);
+  $h-margin: map-get($params, h-margin);
+  $v-padding: map-get($params, v-padding);
+  $v-margin: map-get($params, v-margin);
+
+  @if $border {
+    border: solid $border 1px;
+    border-radius: $border-radius;
+  }
+  @if $align {
+    text-align: $align;
+  }
+  @if $background {
+    background: $background;
+  }
+  @if $boxshadow {
+    @include mk-boxshadow($boxshadow);
+  }
+  @if $padding {
+    padding: $padding;
+  } @else {
+    @if $h-padding {
+      @include h-padding($h-padding);
+    }
+    @if $v-padding {
+      @include v-padding($v-padding);
+    }
+  }
+  @if $margin {
+    margin: $margin;
+  } @else {
+    @if $h-margin {
+      @include h-margin($h-margin);
+    }
+    @if $v-margin {
+      @include v-margin($v-margin);
+    }
+  }
+}
+
+@mixin flex($inline: null, $col: null, $wrap: null, $align:stretch) {
+  @if $inline {
+    display: inline-flex;
+  } @else {
+    display: flex;
+  }
+  @if ($align) {
+    align-items: $align;
+  }
+  @if ($col) {
+    flex-direction: column;
+  }
+  @if ($wrap) {
+    flex-wrap: wrap;
+  }
+}
+
+@mixin flex-col($inline: null, $wrap: null) {
+  @include flex($inline: $inline, $wrap: $wrap, $col: true);
+}
+
+/** Uses mk-wrapper, above, with different defaults */
+@mixin mk-section($args: ()) {
+  $defaults: (
+    border: #aaf,
+    margin: 5px,
+    padding: 5px,
+    background: rgba(255, 255, 255, 0.2),
+    border-radius: 5px,
+  );
+  $params: map-merge($defaults, $args);
+  @include mk-wrapper($params);
+}
+
+// Efects mixins - centering, positioning, etc
+/* The CONTAINING element must be RELATIVE*/
+@mixin absolutecenter($axis: "both") {
+  position: absolute;
+  @if $axis == "y" {
+    margin-top: 0;
+    margin-bottom: 0;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  @if $axis == "x" {
+    margin-left: 0;
+    margin-right: 0;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  @if $axis == "both" {
+    margin: 0;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+//Makes a border INSIDE the block - so takes no space
+@mixin inner-border ($color:$inner-border-color, $spread:$inner-border-spread)  {
+  box-shadow: inset 0px 0px 0px $spread $color;
+}
+
+
+.bg1 {
+  background: #4a0 !important;
+  @include inner-border($color:#444);
+}
+.bg2 {
+  background: #0af !important;
+  @include inner-border($color:#f44);
+
+}
+
+.bg3 {
+  background: #aa0 !important;
+  @include inner-border($color:#0f4);
+}
+
+
+.bg4 {
+  background: #4a4 !important;
+  @include inner-border($color:#004);
+}
+
+.bg5 {
+  background: #244 !important;
+  @include inner-border($color:#f04);
+}
+
+.bg6 {
+  background: #fa3 !important;
+  @include inner-border($color:#04f);
+}
+
+.bg7 {
+  background: #283 !important;
+  @include inner-border($color:#0f4);
+}
+
+.bg8 {
+  background: #faa !important;
+  @include inner-border($color:#004);
+}
+.bg9 {
+  background: #fa3 !important;
+  @include inner-border($color:#f54);
+}
+
+
+
+
+
+
+/* The CONTAINING element must be RELATIVE*/
+@mixin make-horizontal-center {
+  @include absolutecenter(x);
+}
+
+@mixin make-vertical-center {
+  @include absolutecenter(y);
+}
+
+//Flex containers
+.flex-row {
+  @include flex;
+}
+.flex {
+  @include flex;
+}
+
+@mixin flex-i {
+  @include flex($inline: true);
+}
+.flex-i {
+  @include flex-i;
+}
+
+@mixin flex-c {
+  @include flex($col: true);
+}
+.flex-c {
+  @include flex-c;
+}
+
+@mixin flex-ic {
+  @include flex($inline: true, $col: true);
+}
+.flex-ic {
+  @include flex-ic;
+}
+
+//Flex Items (Flex container contents)
+@mixin fitem($grow: 1, $shrink: 1, $basis: 100%) {
+  flex-basis: $basis;
+  flex-grow: $grow;
+  flex-shrink: $shrink;
+}
+
+//Both flex containers & flex items - flex container & item
+@mixin flex-ci($col: false) {
+  @include flex($col: $col);
+  @include fitem;
+}
+
+@mixin flex-ci-col() {
+  @include flex-ci($col: true);
+}
+
+.flex-ci-col {
+  @include flex-ci-col;
+}
+
+.flex-ci-row {
+  @include flex-ci;
+}
+
+.pk-lbl {
+  color: $site-lbl-color;
+  background: $site-lbl-background-color;
+}
+
+.pk-val {
+  color: $site-val-color;
+  display: inline-block;
+  margin: 3px;
+  border: solid #ddd 1px;
+  padding: 3px;
+  background: #ddf;
+  font-weight: bold;
+}
+
+.pk-inp-wrap {
+  border: solid blue 1px;
+}
+
+div input[type="checkbox"].pk-inp {
+  width: auto;
+}
+div input[type="checkbox"].pk-inp.z1 {
+  zoom: 1.5;
+}
+div input[type="checkbox"].pk-inp.z2 {
+  zoom: 2;
+}
+
+div input[type="checkbox"].search-val.form-control {
+  width: auto;
+  display: inline-flex;
+}
+.tal {
+  text-align: left !important;
+}
+.tar {
+  text-align: right !important;
+}
+.tac {
+  text-align: center !important;
+}
+
+.tstpc {
+  @include fs-pc(3);
+  @include fs-rem(12);
+}
+
+//Example:
+//      <data-label-pair
+//        :params="{name:'email',label:'Email:',
+//        instance:instance, pair_wrap:'lw20'}">
+//      </data-label-pair>
+// - class="pk-pair lw20" makes the label 20em
+.pk-pair,
+.pk-pair-row {
+  border: $pkp-pair-border;
+  border-radius: $pkp-pair-border-radius;
+  padding: $pkp-pair-pad;
+  margin: $pkp-pair-mg;
+  background: $pkp-pair-bg;
+  flex-flow: column;
+  display: inline-flex;
+  .pkp-lbl {
+    color: $pkp-lbl-color;
+    font-weight: $pkp-lbl-wght;
+    padding: $pkp-lbl-pad;
+    margin: $pkp-lbl-mg;
+  }
+  .pkp-data {
+    color: $pkp-data-color;
+    background: $pkp-data-bg;
+    padding: $pkp-data-pad;
+    margin: $pkp-data-mg;
+    flex-grow: 1;
+  }
+}
+
+.pk-pair-row {
+  flex-direction: row;
+}
+
+.asection {
+  background: #eee;
+  margin: 5px;
+  padding: 4px;
+  border: solid #aaa 1px;
+  border-radius: 3px;
+}
+
+.bare-pair-h {
+  display: inline-flex;
+}
+
+.bare-el {
+  flex-grow: 1;
+}
+
+.bare-pair-v {
+  display: inline-flex;
+  flex-direction: column;
+}
+//Some sizes for font, padding, margin
+/*
+@mixin mk-sized-classes {
+  @for $i from 0 through 10 {
+		//Font size classes - 
+	}
+}
+*/
+/* Centers a block within an enclosing positioned block*/
+/* Not sure the enclosing block needs this class, but keep in case */
+/* Also seems to work with display: inline-flex */
+/* This doesn't even seem to require that the contained centered box be positioned*/
+.fcenter,
+.center-flex {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.vertical-center-flex,
+.vfcenter {
+  position: relative;
+  flex-direction: column;
+  display: flex;
+  justify-content: center;
+}
+
+.v-center {
+  @include make-vertical-center;
+}
+.h-center {
+  @include make-horizontal-center;
+}
+
+.inline-flex-center {
+  display: inline-flex;
+  align-items: center;
+}
+
+.no-spacing {
+  margin: 0;
+  padding: 0;
+}
+
+.spacing-5 {
+  @include spacing(0.5rem);
+}
+
+.lbl-border {
+  @include mk-border($radius: 0.5rem);
+}
+
+.pk-wrap-pair {
+  display: inline-block;
+}
+
+.inline-flex {
+  display: inline-flex;
+}
+
+.pk-pair-set {
+  //Group of pk-pairs w. similar appearance
+  display: flex;
+}
+
+.title {
+  @include mk-border($color: #422);
+  @include spacing(1rem);
+  @include fs-rem(2rem);
+  @extend .tac;
+  @extend .verdana;
+  background: #cce;
+}
+
+.section-1 {
+  @include mk-section;
+  //  @include flex-col;
+  //  @include fitem;
+}
+.section-2 {
+  @include mk-section(
+    $args: (
+      border: #faa,
+      margin: 5px,
+      padding: 5px,
+      background: #feb,
+      border-radius: 5px,
+    )
+  );
+}
+.section-3 {
+  @include mk-section(
+    $args: (
+      border: #afa,
+      margin: 5px,
+      padding: 5px,
+      background: #efb,
+      border-radius: 5px,
+    )
+  );
+}
+.section-4 {
+  @include mk-section(
+    $args: (
+      border: #000,
+      margin: 5px,
+      padding: 5px,
+      background: #eac,
+      border-radius: 5px,
+    )
+  );
+}
+
+.section-5 {
+  @extend .section-4;
+  @include mk-border($color:blue);
+  background: lighten(#698);
+}
+.section-6 {
+  @extend .section-4;
+  @include mk-border($color:green, $width:3px);
+  background: lighten(#4f8);
+}
+
+.section-6 {
+  @extend .section-4;
+  @include mk-border($color:green);
+  background: lighten(#ff8);
+}
+.min-20rem {
+  @include mk-min($width:20rem);
+  @include mk-border($color:blue, $width: 3px);
+  background: lighten(#4a4);
+}
+
+.json-edit {
+  @include mk-full;
+  @include mk-border($color:red, $width: 4px);
+  background: lighten(#44f);
+  //@include mk-back
+}
+
+.full {
+  @include mk-full;
+}
+
+.tst-light-blue {
+  background: lighten(blue, 50%);
+  width: 10rem;
+  height: 10rem;
+}
+.tst-dark-blue {
+  background: darken(blue, 50%);
+  width: 10rem;
+  height: 10rem;
+}
+.i-par {
+  background: yellow;
+}
+
+/*
+div.panelWrapper > div {
+  max-width: 100%;
+  max-height: 100%;
+  flex-grow: 1;
+  flex-shrink: 1;
+  overflow: auto;
+}
+
+.grid-el {
+  min-width: 35px;
+  overflow: auto;
+  flex-grow:1;
+  flex-shrink:1;
+  flex-basis: 0%;
+}
+*/
+.inner-border {
+  @include inner-border;
+}
+
+.full-block {
+  @include inner-border;
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #bfa;
+}
+
+.full-block-1 {
+  @extend .full-block;
+  background: #ABF;
+}
+
+.full-block-2 {
+  @extend .full-block;
+  background: #bbf;
+}
+
+
+.full-block-3 {
+  @extend .full-block;
+  background: #fbb;
+}
+
+.app-container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}

@@ -2,23 +2,22 @@
   "name": "tst-noapp",
   "private": true,
   "type": "module",
-  "comments" : {
-    "oldscripts": {
-      "dev": "next dev"
+  "comments": {
+    "devDependencies": {
+      "prisma-dbml-generator": "*"
     }
   },
-  "nodemonConfig" : {
-    "ignore":[
+  "nodemonConfig": {
+    "ignore": [
       "./src/pages",
-    "./src/pages/*",
-    "./src/pages/init.ts"
-  ]
-
+      "./src/pages/*",
+      "./src/pages/init.ts"
+    ]
   },
   "scripts": {
     "dev": "nodemon --verbose ./src/api.ts",
     "postinstall": "mkdir -p ./tmp && mkdir -p ./logs",
-    "formatschema" : "npx prisma format",
+    "formatschema": "npx prisma format",
     "initdb": "rm -rf ./prisma/tmp/* && npx prisma migrate dev --name init",
     "seed": "npx prisma db seed",
     "clean": "rm -rf ./package-lock.json ./node_modules ./prisma/migrations"
@@ -28,16 +27,16 @@
     "@types/node": "18.15.5",
     "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",
-    "eslint": "8.36.0",
-    "pk-ts-sqlite-lib": "git+https://github.com/pkirkaas/pk-ts-sqlite-lib.git#working",
-    "
-    "typescript": "5.0.2",
     "body-parser": "*",
-    "dotenv":"*",
     "cookie-parser": "*",
     "cors": "*",
+    "dotenv": "*",
+    "eslint": "8.36.0",
     "express": "*",
-    "nodemon": "*"
+    "nodemon": "*",
+    "pk-ts-sqlite-lib": "git+https://github.com/pkirkaas/pk-ts-sqlite-lib.git#working",
+    "signiflycase": "file:..",
+    "typescript": "5.0.2"
   },
   "prisma": {
     "seed": "ts-node ./src/seed.ts"
@@ -45,10 +44,5 @@
   "devDependencies": {
     "@faker-js/faker": "^7.6.0",
     "prisma": "^4.11.0"
-  },
-  "comments": {
-    "devDependencies" : {
-      "prisma-dbml-generator": "*"
-    }
   }
 }

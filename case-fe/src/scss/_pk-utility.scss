@@ -1,0 +1,3462 @@
+/**Copyight (C) 2016 by Paul Kirkaas - All Rights Reserved */
+// So much here that does so much - but too confusing to keep track of!
+// 2022 - OMG!! Should have figured this out years ago!
+// Build just basic aspects, then combine them by extending to build EXACTLY
+// What you want. THOSE WILL BE AT THE BOTTOM!
+// SEE BOTTOM FOR EXPLANATIONS & EXAMPLES!
+/*
+  Generic utility SCSS partial for PK Extensions
+    Created on : Oct 11, 2015, 4:57:29 AM
+    Author     : Paul Kirkaas
+*/
+
+
+
+/**Copyight (C) 2016 by Paul Kirkaas - All Rights Reserved */
+/** Mixins to add to BootStrap (4 alpha 6). Assumes "_variables.scss' is in the GULP path */
+/*
+//Optional Google Fonts
+<link href="https://fonts.googleapis.com/css?family=Montserrat:400,700|Open+Sans:400,700|Oswald:400,700|Lato:400,700"
+          rel="stylesheet">
+font-family: 'Montserrat', sans-serif;
+font-family: 'Open Sans', verdana;
+font-family: 'Oswald', verdana;
+font-family: 'Lato', verdana;
+*/
+
+//@import 'variables';
+// If they weren't previously defined, use defaults
+$grid-breakpoints: (xs: 0, sm: 544px, md: 768px, lg: 992px, xl: 1200px) !default;
+$grid-columns:               12 !default;
+$grid-gutter-width:          1.875rem !default; // 30px
+
+//First three are to define classes at breakpoints - above, below, and between
+// Just use like:
+/*
+.container-fluid {
+  @include below-bp(sm) {
+   margin: 0;
+   padding: 0;
+  }
+}
+*/
+
+//Just a function to translate different size units
+//to a standard
+@function breakpoint($sz) {
+  @if type-of($sz) == string {
+    $sz: map-get($grid-breakpoints, $sz)
+  }
+  @if type-of($sz) != 'number' {
+    @debug ('Result of sz:', $sz);
+    @error 'Bad parameter sz:';
+  }
+  @return $sz;
+}
+
+//Build custom media size classes. Ex:
+/*
+.btn {
+  margin-left: 5px;
+ }
+
+.btn {
+@include below-bp(sm) {
+   margin-left: 0;
+  }
+}
+//Produces:
+
+@media (max-width: 575px) {
+  .btn {
+    margin-left: 0; } }
+*/
+/* OR can you inlude a bunch of class declarations 
+   in a media mixin & just do it once? but I guess you could do that
+   anyway....
+
+
+@include below-bp(200) {
+  .
+}
+*/
+
+
+
+// Can take a BS 'sz' ('xs', 'sm', etc)
+@mixin above-bp($sz) {
+  $breakpoint: breakpoint($sz);
+  @media (min-width: $breakpoint) {
+    @content
+  }
+}
+@mixin below-bp($sz) {
+  $breakpoint: breakpoint($sz);
+  @media (max-width: $breakpoint - 1px) {
+    @content
+  }
+}
+
+@mixin between-bps($min, $max) {
+  $min-breakpoint: breakpoint($min);
+  $max-breakpoint:  breakpoint($max);
+  @media ( min-width: $min-breakpoint ) and (max-width: $max-breakpoint - 1px) {
+    @content
+  }
+}
+
+@mixin mx-text-format($sz:medium, $weight:400, $color:black) {}
+
+
+
+/* The CONTAINING element must be RELATIVE*/
+@mixin absolutecenter($axis: "both"){
+  position:absolute;
+  @if $axis == "y"{
+    margin-top: 0;
+    margin-bottom: 0;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  @if $axis == "x"{
+    margin-left: 0;
+    margin-right: 0;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  @if $axis == "both"{
+    margin: 0;
+    top:50%;
+    left:50%;
+    transform: translate(-50%,-50%);
+  }
+}
+
+/* The CONTAINING element must be RELATIVE*/
+@mixin make-horizontal-center {
+  @include absolutecenter(x);
+}
+
+@mixin make-vertical-center {
+  @include absolutecenter(y);
+}
+
+
+//In SCSS, '' & 0 are true
+@function empty($value) {
+  @if not($value) 
+      or $value == "" 
+      or $value == 0
+      or $value == ()
+      or length($value) == 0 {
+    @return true;
+  }
+  @return false;
+}
+
+
+
+/** Makes (multiple) text format classes, based on $args map:
+ * All class names prepended by 'au-'
+ * Params:
+ * cname: format - class name(s) will be au-cname
+ * weight: null - font-weight
+ * font: null - font-family
+ * szrange: 0 or int - how many class sizes
+ * crange: null or true - generate lighter & darker fonts?
+ * bgrange: null or 1 - generate light & dark bg? (Prefer: Use wrapper)
+ * background: null - or color (Prefer: Use wrapper for BG)
+ * margin: null - or margin (Prefer: Use wrapper)
+ * padding: null or padding (Prefer: Use wrapper)
+ * align: null - or center or left or right (Prefer: Use wrapper)
+ * color: null or color
+ * border: null or color
+ * 
+*/
+
+
+@mixin mk-format($args:()) {
+  $defaults: (cname:format,szrange:0, size:1em);
+  $params: map-merge($defaults,$args);
+  $cname: map-get($params,cname);
+  $bname: au-#{$cname};
+  $border: map-get($params,border);
+  $szrange: map-get($params,szrange);
+  $crange: map-get($params,crange);
+  $bgrange: map-get($params,bgrange);
+  $background: map-get($params,background);
+  $color: map-get($params,color);
+  $weight: map-get($params,weight);
+  $display: map-get($params,display);
+  $align: map-get($params,align);
+  $font: map-get($params,font);
+  $size: map-get($params,size);
+  $textshadow: map-get($params,textshadow);
+  $boxshadow: map-get($params,boxshadow);
+  
+  $map:();
+  @if $border {
+    $map: map-merge($map, (border: solid $border 1px,
+      border-radius: .5em));
+  }
+  $map:map-merge($map,(display:$display,
+      text-align:$align,
+      font-family:$font));
+
+  $clmap: if($color and $crange, 
+        ('-flt':(color:lighten($color,20%)),
+          '':(),
+          '-fdk':(color:darken($color,20%))),
+          ('':(color:$color)));
+
+
+  $bgmap: if($background and $bgrange, 
+        ('-bglt':(background:lighten($color,20%)),
+          '':(background:$background),
+          '-bgdk':(background:darken($background,20%))),
+          ('':(background:$background)));
+
+  @for $i from 0 through $szrange {
+    $sz: if($i!=0, $i, null);
+    // For a while was:
+    //$sz: if($i!=0, -$i, null);
+    $szmap: (font-size:($i/5)+$size);
+    @each $bga in map-keys($bgmap) {
+      $bmap: map-get($bgmap,$bga);
+      @each $ca in map-keys($clmap) {
+        $cmap: map-get($clmap,$ca);
+        //@debug #{$bname}#{$ca}#{$bga}#{$sz};
+        .#{$bname}#{$ca}#{$bga}#{$sz} {
+          @include mk-decblock($map);
+          @include mk-decblock($cmap);
+          @include mk-decblock($bmap);
+          @include mk-decblock($szmap);
+          @include mk-boxshadow($boxshadow);
+          @include mk-textshadow($textshadow);
+        }
+      }
+    }
+  }
+}
+
+
+
+// Builds a declaration block from mapped property/values
+
+//@mixin mk-decblock($map:()) {
+//  $keys: map-keys($map);
+//  @each $key in $keys {
+//    #{$key}: map-get($map,$key);
+//  }
+//}
+
+@mixin mk-classdef($cname,$maplist) {
+  .#{$cname} {
+    @each $map in $maplist {
+      @include mk-decblock($map);
+    }
+  }
+}
+@mixin mk-decblock($map:()) {
+  $keys: map-keys($map);
+  @each $key in $keys {
+    @if not(empty($key) or empty(map-get($map,$key))) {
+      #{$key}: map-get($map,$key);
+    }
+  }
+}
+
+
+
+@mixin mk-boxshadow($map:()) {
+  @if not(empty($map)) {
+    @if $map == true {
+      box-shadow: 1rem 1rem 3rem -1rem rgba(0,0,0,.5);
+    }
+  }
+}
+@mixin mk-textshadow ($map:()) {
+  @if not(empty($map)) {
+    @if $map == true {
+      text-shadow: .1rem .1rem .3rem  rgba(0,0,0,.5);
+    }
+  }
+
+}
+
+
+//@include mk-format((cname:head,
+//    szrange:3,
+//     color:#456,crange:1,
+//     background:#cde,
+//     bgrange:1,
+//     border: #aaf,
+//     display: inline,
+//     ));
+
+@mixin h-padding($sz) {
+  padding-left: $sz;
+  padding-right: $sz;
+}
+
+@mixin v-padding($sz) {
+  padding-top: $sz;
+  padding-bottom: $sz;
+}
+
+@mixin v-margin($sz) {
+  margin-top: $sz;
+  margin-bottom: $sz;
+}
+
+@mixin h-margin($sz: auto) {
+  margin-left: $sz;
+  margin-right: $sz;
+}
+
+@mixin mk-zooms {
+  @for $i from 0 through 50 {
+    $inc: $i/10;
+    .z#{$i} { zoom: 1+$inc; }
+    .z-#{$i} { zoom: 1-$inc; }
+  }
+}
+@include mk-zooms;
+
+
+@for $i from 1 through 100 {
+  .width#{$i}pc {width: $i * 1%;}
+  .w#{$i}pc {width: $i * 1%;}
+  .height#{$i}pc {height: $i * 1%;}
+  .h#{$i}pc {height: $i * 1%;}
+  .h#{$i} {height: $i * 1em;}
+  .w#{$i} {width: $i * 1em;}
+}
+
+
+
+
+
+/* Makes a bunch of left/right margins/paddings */
+.fs-s {
+  font-size: smaller;
+}
+.fs-l {
+  font-size: larger;
+}
+//These are REM - so absolute across the site.
+@mixin mk-spacing {
+  @for $i from 0 through 90 {
+    $sz: if($i!=0, -$i, 0);
+    $offset: $i/3 * 1rem;
+    $eoffset: $i/3 * 1em;
+    $foffset: $offset/5;
+    $feoffset: $eoffset/5;
+    @if $i < 50 {
+      //$foffset: $offset + 1em;
+      //Font Size: REM, up and down - fs-0: 1rem;, fs-1: fs--1
+      .fs#{$sz}, .f-s#{$sz} {
+        font-size: 1rem + $foffset !important;
+      }
+      .fs-#{$sz}, .f-s-#{$sz} {
+        font-size: 1rem - $foffset !important;
+      }
+    } 
+
+    .w#{$i}em {width: #{$i}em;}
+    .w#{$i}rem {width: #{$i}rem;}
+    .br-#{$sz} {border-radius: $foffset !important}
+
+    //Heights & widths
+    .h#{$sz} {height: $offset !important;}
+    .height#{$sz} {height: $offset !important;}
+    .minh#{$sz}, .minh-#{$sz},  .min-height#{$sz} {min-height: $offset !important;}
+    .maxh#{$sz}, .maxh-#{$sz},   .max-height#{$sz} {max-height: $offset !important;}
+    .width#{$sz}, .w#{$sz}  {width: $offset !important;}
+    
+    .hw#{$sz}, .wh#{$sz} {width: $offset !important; height: $offset !important;}
+    .minw#{$sz}, .minw-#{$sz}, .min-width#{$sz} {min-width: $offset !important;}
+    .maxw#{$sz}, .maxw-#{$sz}, .max-width#{$sz} {max-width: $offset !important;}
+    //Paddings
+    //REM
+    .p-r#{$sz}, .pr#{$sz}, .pad-r#{$sz} { padding-right: $offset !important; }
+    .p-l#{$sz}, .pl#{$sz}, .pad-l#{$sz} { padding-left: $offset !important; }
+    .p-t#{$sz}, .pt#{$sz}, .pad-t#{$sz} { padding-top: $offset !important; }
+    .p-b#{$sz}, .pb#{$sz}, .pad-b#{$sz} { padding-bottom: $offset !important; }
+    .p-v#{$sz}, .pv#{$sz}, .pad-v#{$sz} { padding-top: $offset !important; padding-bottom: $offset !important; }
+    .p-h#{$sz}, .ph#{$sz}, .pad-h#{$sz} { padding-left: $offset !important; padding-right: $offset !important; }
+    .p#{$sz}, .p#{$sz}, .pad#{$sz} { padding: $offset !important; }
+
+    //EM
+    .pe-r#{$sz}, .pade-r#{$sz} { padding-right: $eoffset !important; }
+    .pe-l#{$sz}, .pade-l#{$sz} { padding-left: $eoffset !important; }
+    .pe-t#{$sz}, .pade-t#{$sz} { padding-top: $eoffset !important; }
+    .pe-b#{$sz}, .pade-b#{$sz} { padding-bottom: $eoffset !important; }
+    .pe-v#{$sz}, .pade-v#{$sz} { padding-top: $eoffset !important; padding-bottom: $eoffset !important; }
+    .pe-h#{$sz}, .pad-h#{$sz} { padding-left: $eoffset !important; padding-right: $eoffset !important; }
+    .pe#{$sz}, .pad#{$sz} { padding: $eoffset !important; }
+
+    //Margins
+    //REM
+    .m-r#{$sz},.mr#{$sz}, .marg-r#{$sz} { margin-right: $offset !important; }
+    .m-l#{$sz},.ml#{$sz}, .marg-l#{$sz} { margin-left: $offset !important; }
+    .m-t#{$sz},.mt#{$sz}, .marg-t#{$sz} { margin-top: $offset !important; }
+    .m-b#{$sz},.mb#{$sz}, .marg-b#{$sz} { margin-bottom: $offset !important; }
+    .m-v#{$sz},.mv#{$sz}, .marg-v#{$sz} { margin-top: $offset !important; margin-bottom: $offset !important; }
+    .m-h#{$sz},.mh#{$sz}, .marg-h#{$sz} { margin-right: $offset !important; margin-left: $offset !important; }
+
+    .m-r-#{$sz}, .mr-#{$sz}, .marg-r-#{$sz} { margin-right: -$offset !important; }
+    .m-l-#{$sz}, .ml-#{$sz}, .marg-l-#{$sz} { margin-left: -$offset !important; }
+    .m-t-#{$sz}, .mt-#{$sz}, .marg-t-#{$sz} { margin-top: -$offset !important; }
+    .m-b-#{$sz}, .mb-#{$sz}, .marg-b-#{$sz} { margin-bottom: -$offset !important; }
+    .m-v-#{$sz}, .mv-#{$sz}, .marg-v-#{$sz} { margin-top: -$offset !important; margin-bottom: -$offset !important; }
+    .m-h-#{$sz}, .mh-#{$sz}, .marg-h-#{$sz} { margin-right: -$offset !important; margin-left: -$offset !important; }
+
+    .m#{$sz}, .marg#{$sz} { margin: $offset !important; }
+
+    //EM
+    .me-r#{$sz}, .mer#{$sz}, .marge-r#{$sz} { margin-right: $eoffset !important; }
+    .me-l#{$sz}, .mel#{$sz}, .marge-l#{$sz} { margin-left: $eoffset !important; }
+    .me-t#{$sz}, .met#{$sz}, .marge-t#{$sz} { margin-top: $eoffset !important; }
+    .me-b#{$sz}, .meb#{$sz}, .marge-b#{$sz} { margin-bottom: $eoffset !important; }
+    .me-v#{$sz}, .mev#{$sz}, .marge-v#{$sz} { margin-top: $eoffset !important; margin-bottom: $offset !important; }
+    .me-h#{$sz}, .meh#{$sz}, .marge-h#{$sz} { margin-right: $eoffset !important; margin-left: $eoffset !important; }
+
+    .me-r-#{$sz}, .mer-#{$sz}, .marge-r-#{$sz} { margin-right: -$eoffset !important; }
+    .me-l-#{$sz}, .mel-#{$sz}, .marge-l-#{$sz} { margin-left: -$eoffset !important; }
+    .me-t-#{$sz}, .met-#{$sz}, .marge-t-#{$sz} { margin-top: -$eoffset !important; }
+    .me-b-#{$sz}, .meb-#{$sz}, .marge-b-#{$sz} { margin-bottom: -$eoffset !important; }
+    .me-v-#{$sz}, .mev-#{$sz}, .marge-v-#{$sz} { margin-top: -$eoffset !important; margin-bottom: -$eoffset !important; }
+    .me-h-#{$sz}, .meh-#{$sz}, .marge-h-#{$sz} { margin-right: -$eoffset !important; margin-left: -$eoffset !important; }
+
+    .me#{$sz}, .marge#{$sz} { margin: $eoffset !important; }
+  }
+
+  .ma, .m-a {margin: auto !important;}
+  .mva, .m-v-a {margin-top: auto !important; margin-bottom: auto !important;}
+  .mha, .m-h-a {margin-left: auto !important; margin-right: auto !important;}
+  .mta, .m-t-a {margin-top: auto !important;}
+  .mba, .m-b-a {margin-bottom: auto !important;}
+  .mla, .m-l-a {margin-left: auto !important;}
+  .mra, .m-r-a {margin-right: auto !important;}
+}
+
+// makes min-height & min-width - if no height, same as width)
+@mixin mk-min ($width:10rem, $height:null) {
+  @if empty($height) {
+    $height:$width;
+  }
+  min-height: $height;
+  min-width: $width;
+}
+
+@mixin mk-full {
+  height: 100%;
+  width: 100%;
+}
+
+//Make font weights
+@mixin mk-weights {
+  @for $i from 1 through 9 {
+    $weight: 100 * $i;
+    .fw-#{$i},
+    .f-w-#{$i},
+    .fw#{$i},
+    .f-w#{$i} {
+        font-weight: $weight !important;
+      }
+  }
+}
+
+@include mk-weights;
+
+
+/** Makes text/section wrappers, with MAP args/defaults:
+ * boxshadow: default for the mk-boxshadow mixin
+ * border: the border color, or false
+ * background: the background color, or false
+ * align: text alignment of the contained text - left, right, center
+ * v-padding: 1em
+ * h-padding: null
+ * v-margin: 1em
+ * h-margin: null
+ * border-radius: null
+ * margin: null, if present, overrides v & h margin
+ * padding: null, if present, overrides v & h padding
+ */
+
+@mixin mk-wrapper($args:()) {
+  $defaults: (
+    boxshadow:true,
+    border:#aaa,
+    background: rgba(230,240,250,.3),
+    v-padding: 1em,
+    v-margin: 1em,
+    border-radius: 5px,
+    );
+  $params: map-merge($defaults,$args);
+
+  $align: map-get($params,align);
+  $boxshadow: map-get($params,boxshadow);
+  $border: map-get($params,border);
+  $border-radius: map-get($params,border-radius);
+  $background: map-get($params,background);
+  $padding: map-get($params,padding);
+  $margin: map-get($params,margin);
+  $h-padding: map-get($params,h-padding);
+  $h-margin: map-get($params,h-margin);
+  $v-padding: map-get($params,v-padding);
+  $v-margin: map-get($params,v-margin);
+
+  @if $border {
+    border: solid $border 1px;
+    border-radius: $border-radius;
+  }
+  @if $align {
+    text-align: $align;
+  }
+  @if $background {
+    background: $background;
+  }
+  @if $boxshadow {
+    @include mk-boxshadow($boxshadow);
+  }
+  @if $padding {
+    padding: $padding;
+  } @else {
+    @if $h-padding {
+      @include h-padding($h-padding);
+    }
+    @if $v-padding {
+      @include v-padding($v-padding);
+    }
+  }
+  @if $margin {
+    margin: $margin;
+  } @else {
+    @if $h-margin {
+      @include h-margin($h-margin);
+    }
+    @if $v-margin {
+      @include v-margin($v-margin);
+    }
+  }
+}
+
+
+/** Generates a range of wrapper classes, of increasing padding/margin
+ */
+@mixin mk-au-wraps($args:()) {
+  $defaults: (cname:wrap,szrange:10, size:1em);
+  $params: map-merge($defaults,$args);
+  $cname: map-get($params,cname);
+  $size: map-get($params,size);
+  $szrange: map-get($params,szrange);
+  $bname: au-#{$cname};
+
+  @for $i from 0 through $szrange {
+    $sz: if($i!=0, -$i, null);
+    //$szmap: (font-size:($i/5)+$size);
+    $vpadmar: ($i/5)+($size/5);
+    $newparms: map-merge($params,(v-margin:$vpadmar,v-padding:$vpadmar));
+    //@debug #{$bname}#{$sz};
+    .#{$bname}#{$sz} {
+        @include mk-wrapper($newparms);
+    }
+  }
+}
+
+/** Uses mk-wrapper, above, with different defaults */
+@mixin mk-section($args:()) {
+  $defaults: (
+    border: #aaf,
+    margin: 5px,
+    padding: 5px,
+    background:  rgba(255,255,255,.2),
+    border-radius: 5px,
+    );
+  $params: map-merge($defaults,$args);
+  @include mk-wrapper($params);
+}
+@mixin mk-section-nomargin($args:()) {
+  $defaults: (
+    margin: 0,
+  );
+  $params: map-merge($defaults,$args);
+  @include mk-section($params);
+}
+
+.section {
+  @include mk-section;
+  @include below-bp(sm) {
+   margin-left: 1px;
+   margin-right: 1px;
+  }
+}
+
+// New BS4A6 row has -15px margin by default. Compensate....
+.bs4-section {
+  $params: (
+    padding: 20px,
+    );
+  @include mk-section($params);
+}
+
+
+.section-nomargin {
+  @include mk-section-nomargin;
+}
+
+@mixin mk-colors {
+  $hl: 0 2 4 6 8 a c e f;
+  @each $c1 in $hl {
+    @each $c2 in $hl {
+      @each $c3 in $hl {
+        .bg-#{$c1}#{$c2}#{$c3} {
+          background-color: unquote('#')+$c1+$c2+$c3 !important;
+        }
+        .c-#{$c1}#{$c2}#{$c3} {
+          color: unquote('#')+$c1+$c2+$c3 !important;
+        }
+        .bc-#{$c1}#{$c2}#{$c3} {
+          //border-color: unquote('#')+$c1+$c2+$c3 !important;
+          border: solid 1px  unquote('#')+$c1+$c2+$c3 !important;
+        }
+      }
+    }
+  }
+}
+
+@include mk-colors;
+$base-header-padding: .3rem !default;
+//$base-header-margin: .3rem !default;
+$base-header-margin: 0 !default;
+$base-header-font-size: 1rem !default;
+$base-header-color: #400 !default;
+$base-header-ib: #004 !default;
+$base-header-ir: #400 !default;
+
+// Making site headers - 
+.sh, .shr, .shb, .shib, .shir {
+  font-size: $base-header-font-size;
+  @extend .montserrat !optional;
+  //font-family: verdana;
+  color: $base-header-color;
+  font-weight: bold;
+  border-radius: .3em;
+  padding: $base-header-padding;// 20 * $base-header-padding;
+  margin: $base-header-margin; 
+}
+.shb {
+  color: $base-header-ib;
+}
+.shib, .shir {
+  padding: $base-header-padding 0;
+  text-align: center;
+  color: #fff;
+}
+
+.shib {
+  background-color: $base-header-ib;
+}
+.shir {
+  background-color: $base-header-ir;
+}
+
+@mixin mk-site-headers($base-header: sh) {
+  @for $i from -5 through 20 {
+     $font-size: $i/5 + $base-header-font-size;
+    .#{$base-header}#{$i},  .#{$base-header}r#{$i},.#{$base-header}b#{$i} {
+      font-size: $font-size;
+      @extend  .#{$base-header};
+    }
+    .#{$base-header}b#{$i} {
+      color: $base-header-ib;
+    }
+    .#{$base-header}ib#{$i}, .#{$base-header}ir#{$i} {
+      //font-size: $i/5 + $base-header-font-size;
+      font-size: $font-size;
+      @extend  .#{$base-header};
+      padding: $base-header-padding 0;
+      text-align: center;
+      color: #fff;
+      background: $base-header-ib;
+    }
+    .#{$base-header}ir#{$i} {
+      background: $base-header-ir;
+    }
+  }
+}
+
+@include mk-site-headers;
+
+
+/** Some button styling, also for divs, and menus? */
+@mixin mk-btn($args:()) {
+  $defaults: (
+    font-size: 1rem,
+    font-weight: bold,
+    name: site-button,
+    //background:  linear-gradient(to top, #759ae9, #376fe0), 
+    background: #44f,
+    font-family: arial,
+    color: #eee,
+    padding: .4em,
+    margin: .4em,
+    border-radius: .3em,
+    );
+  $params: map-merge($defaults,$args);
+  $name: map-get($params,name);
+  $margin: map-get($params,margin);
+  $padding: map-get($params,padding);
+  $color: map-get($params,color);
+  $font-size: map-get($params,font-size);
+  $background: map-get($params,background);
+  $border-radius: map-get($params,border-radius);
+  $font-weight: map-get($params,font-weight);
+  $font-family: map-get($params,font-family);
+
+  body .#{$name}:focus,
+  body .#{$name}:visited,
+  body .#{$name} {
+    font-size: $font-size;
+    font-weight: $font-weight;
+    font-family: $font-family;
+    white-space: nowrap;
+    text-align: center;
+    text-decoration: none;
+    background: $background;
+    border-top: 1px solid #1f58cc;
+    border-right: 1px solid #1b4db3;
+    border-bottom: 1px solid #174299;
+    border-left: 1px solid #1b4db3;
+    border-radius: $border-radius;
+    box-shadow: inset 0 0 2px 0 rgba(57, 140, 255, 0.8);
+    color: $color;
+    padding: $padding ;
+    margin: $margin;
+    text-shadow: 0 -1px 1px #1a5ad9;
+  }
+  body .#{$name}:focus a,
+  body .#{$name}:visited a,
+  body .#{$name} a {
+    color: $color;
+    text-decoration: none;
+  }
+
+  body .#{$name}:hover,
+  body .#{$name}:hover a {
+      text-decoration: none;
+      color: lighten($color, 20%);
+  }
+  body .#{$name}:hover {
+      background: darken($background, 20%);
+      cursor: pointer; 
+  }
+
+  body .#{$name}:active {
+      border-top: 1px solid #1b4db3;
+      border-right: 1px solid #174299;
+      border-bottom: 1px solid #133780;
+      border-left: 1px solid #174299;
+      box-shadow: inset 0 0 5px 2px #1a47a0, 0 1px 0 #eeeeee;
+  }
+}
+
+//Will make a class '.site-button', with the defaults
+@include mk-btn;
+
+@include mk-btn((name:tiny-btn, font-size: .9rem, margin: .3em, padding: .3em));
+
+@include mk-btn((name:site-btn, font-size: 1rem, margin: .5em, padding: .5em, font-weight: bold));
+
+
+/** Some button styling, also for divs, and menus? */
+/*
+$default-pkmvc-button: 1 !default;
+@if $default-pkmvc-button == 1 {
+  body .pkmvc-button:focus,
+  body .pkmvc-button:visited,
+  body .pkmvc-button {
+    white-space: nowrap;
+    text-align: center;
+    text-decoration: none;
+    background-image: linear-gradient(to top, #759ae9, #376fe0);
+    border-top: 1px solid #1f58cc;
+    border-right: 1px solid #1b4db3;
+    border-bottom: 1px solid #174299;
+    border-left: 1px solid #1b4db3;
+    border-radius: .3rem;
+    box-shadow: inset 0 0 2px 0 rgba(57, 140, 255, 0.8);
+    color: #fff;
+    font: bold 1rem/1 "helvetica neue", helvetica, arial, sans-serif;
+    padding: .5rem ;
+    margin: .5rem;
+    text-shadow: 0 -1px 1px #1a5ad9;
+  }
+  body .pkmvc-button:focus a,
+  body .pkmvc-button:visited a,
+  body .pkmvc-button a {
+    color: #fff;
+    text-decoration: none;
+  }
+
+  body .pkmvc-button:hover,
+  body .pkmvc-button:hover a {
+      text-decoration: none;
+      color: #ffe;
+  }
+  body .pkmvc-button:hover {
+      background-image: linear-gradient(to top, #557ac9, #174fc0);
+      cursor: pointer; 
+  }
+
+  body .pkmvc-button:active {
+      border-top: 1px solid #1b4db3;
+      border-right: 1px solid #174299;
+      border-bottom: 1px solid #133780;
+      border-left: 1px solid #174299;
+      box-shadow: inset 0 0 5px 2px #1a47a0, 0 1px 0 #eeeeee;
+  }
+}
+*/
+
+/******************************************************************/
+/*
+Standard Classes & Mixins & Vars
+
+Site Headers:
+.sh1 -> .sh20 (Increasing in size)
+
+Spacing/Margins/Padding:
+.m-x-y
+.p-x-y
+where:
+y an int
+x in t,l,b,r,h,v, or none for all (ex, .m-h-7, .m-5)
+
+//Colors: Font/Background/Border  ex: .bg-04f
+  x in  [0 2 4 6 8 a c e f];
+.bg-xxx - background color - even digits, plus f
+.c-xxx - font color - even digits, plus f
+.bc-xxx - border color - even digits, plus f
+
+//Font Weights:
+x from 1 - 9
+.fwx
+.fw-x
+
+//Font Sizing: Based on REM , up & down:
+.fs-0, .f-s-0 { font-size: 1REM !important; }
+.fs-1, .f-s-1 { font-size: 1.04rem !important; }
+.fs--1, .f-s--1 { font-size: 0.96rem !important; }
+
+
+Google Fonts:
+.verdana { font-family:  verdana; }
+.oswald { font-family: 'Oswald', verdana; }
+.lato { font-family: 'Lato', arial; }
+.roboto { font-family: 'Roboto', verdana; }
+.open-sans { font-family: 'Open Sans', verdana; }
+.montserrat { font-family: 'Montserrat', verdana; }
+.raleway { font-family: 'Raleway', verdana; }
+.droid-sans { font-family: 'Droid Sans', verdana; }
+
+Inverse Bacgrounds:
+.inv-blue { background-color: #008; color: #fff; }
+.inv-red { background-color: #800; color: #fff; }
+.inv-green { background-color: #080; color: #fff; }
+
+Flex Boxes:
+.flex { display: flex; }
+.iflex { display: inline-flex; }
+.flex-grow { flex-grow: 5; }
+.align-self-center {align-self: center;}
+
+Tables:
+$pk-tbl-border-color: #aaa !default;
+
+table.pk-tbl, table.pk-tbl { td, th {
+  border-collapse: collapse;
+  border: solid $pk-tbl-border-color 1px;
+  padding: .5em; } }
+
+.pre-wrap { white-space: pre-wrap; }
+.js-dialog-content { display: none; }
+/ ******   Text Tweaks *********** /
+.large { font-size: large ! important; }
+.x-large { font-size: x-large ! important; }
+.xx-large { font-size: xx-large ! important; }
+.table-cell { display: table-cell ! important; }
+.vertical-align-bottom { vertical-align: bottom !important; }
+
+.no-space { margin: 0; padding: 0! important ; border: none! important ;
+  background: none transparent ! important ; }
+.big-box-shadow { box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75); }
+.box-shadow { box-shadow: inset 0 0 2px 0 rgba(57, 140, 255, 0.8); }
+.box-shadow-2 { box-shadow: inset 0 0 2px 0 rgba(57, 140, 255, 0.8); }
+
+.border-radius-5, .border-radius5 {border-radius: 5px ! important}
+.fullheight, div .full-height { height: 100% ! important; }
+.fullwidth, div .full-width { width: 100% ! important; }
+
+.italic { font-style: italic; }
+.bold { font-weight: bold ! important; }
+.float-left, .floatleft { float: left ! important; }
+.float-right, .floatrignt { float: right ! important; }
+.block { display: block ! important; }
+.inline { display: inline-block ! important; }
+.hidden { display: none; }
+.invisible { visibility: hidden; }
+
+.overflowauto, .overflow-auto {overflow:auto;}
+.top-square-corners { border-top-left-radius: 0px ! important; border-top-right-radius: 0px ! important; }
+.top-round-corners { border-top-left-radius: 5px ! important; border-top-right-radius: 5px ! important; }
+.bottom-round-corners { border-bottom-left-radius: 5px ! important; border-bottom-right-radius: 5px ! important; }
+.bottom-square-corners { border-bottom-left-radius: 0px ! important; border-bottom-right-radius: 0px ! important; }
+
+//Some autogenerated classes - too complicated to remember:
+//Auto-wrap classes for borders/surronding:
+
+.au-wrap {
+.au-wrap-1 {
+.au-wrap-2 {
+.au-wrap-3 {
+.au-wrap-4 {, etc.
+
+Unfortunately a bunch ov over-compex generated text classes, lik
+.au-head-flt-7 {
+.au-head-7 {
+.au-head-fdk-7 {
+.au-head-flt-8 {
+.au-head-8 {
+.au-head-fdk-8 {
+//Which all has meaning
+
+.section { @include mk-section; }
+.section-nomargin { @include mk-section-nomargin; }
+
+
+// Macros & Mixins:
+@function empty($value) { @if not($value) or $value == "" or $value == 0
+      or $value == () or length($value) == 0 
+
+
+@mixin mk-textshadow ($map:()) {
+@mixin mk-boxshadow($map:()) {
+
+
+Text formatting was too difficult to use, but maybe the wrap classes?
+
+
+
+
+
+*/
+//@import 'pk-variables';
+$grid-breakpoints:(xs: 0, sm: 544px, md: 768px, lg: 992px, xl: 1200px) !default;
+$grid-columns:               12 !default;
+$grid-gutter-width:          1.875rem !default; // 30px
+$inner-border-color: #888 !default;
+$inner-border-spread: 1px !default;
+
+
+//Makes a border INSIDE the block - so takes no space
+@mixin inner-border {
+  box-shadow: inset 0px 0px 0px $inner-border-spread $inner-border-color;
+}
+
+.inner-border {
+  @include inner-border;
+}
+
+
+// Depends on jQuery removing this class when loaded!
+.hide-until-loaded {
+  display: none !important;
+}
+
+
+.overflowauto, .overflow-auto {overflow:auto;}
+
+.top-square-corners { border-top-left-radius: 0px ! important; border-top-right-radius: 0px ! important; }
+.top-round-corners { border-top-left-radius: 5px ! important; border-top-right-radius: 5px ! important; }
+.bottom-round-corners { border-bottom-left-radius: 5px ! important; border-bottom-right-radius: 5px ! important; }
+.bottom-square-corners { border-bottom-left-radius: 0px ! important; border-bottom-right-radius: 0px ! important; }
+
+.max-width-100 {max-width: 100% !important;}
+.width-auto, .auto-width {width: auto !important}
+
+.tal, .text-align-left, .align-left, .left-align { text-align: left ! important; }
+.tar, .text-align-right, .align-right, .right-align { text-align: right ! important; }
+.tac, .text-align-center, .align-center, .center-align { text-align: center ! important; }
+.italic { font-style: italic; }
+.bold { font-weight: bold ! important; }
+
+.float-left, .floatleft, .fleft, .left { float: left ! important; }
+.float-right, .floatright, .fright, .right { float: right ! important; }
+
+.block { display: block ! important; }
+.inline { display: inline-block ! important; }
+.hidden { display: none; }
+.invisible { visibility: hidden; }
+
+
+.marginauto, .margin-auto, .auto-margin, .automargin {
+  margin-left: auto ! important;
+  margin-right: auto ! important;
+  margin-top: auto ! important;
+  margin-bottom: auto ! important;
+}
+
+.min-line-height:empty::after {
+    content: ".";
+    visibility: hidden;
+}
+
+.self-center {
+  justify-content: center;
+}
+
+@include mk-spacing;
+
+.hw1, .wh1 {height: 1rem !important; width: 1rem !important;}
+.hw2, .wh2 {height: 2rem !important; width: 2rem !important;}
+
+.border-light, .border, .mildborder, .mild-border 
+    { border: solid $default-border-color 1px; }
+.border-rad {
+  @extend .border;
+  border-radius: 5px;
+}
+
+.border-red {border-color: #f00 ! important;}
+
+.border5, .border-5 { border-width: 5px ! important; border-style: solid;}
+
+.border-radius-5, .border-radius5,  .b-r-5, .br5 {border-radius: 5px ! important}
+
+.fullheight, div .full-height { height: 100% ! important; }
+.fullwidth, div .full-width { width: 100% ! important; }
+
+.fullheight-1 {height: calc(100% - 1em ) ! important;}
+.fullheight-2 {height: calc(100% - 2em ) ! important;}
+.fullheight-3 {height: calc(100% - 3em ) ! important;}
+.fullheight-4 {height: calc(100% - 4em ) ! important;}
+.fullheight-5 {height: calc(100% - 5em ) ! important;}
+.fullheight-6 {height: calc(100% - 6em ) ! important;}
+
+
+.fullwidth-1 {width: calc(100% - 1em ) ! important;}
+.fullwidth-2 {width: calc(100% - 2em ) ! important;}
+.fullwidth-3 {width: calc(100% - 3em ) ! important;}
+.fullwidth-4 {width: calc(100% - 4em ) ! important;}
+.fullwidth-5 {width: calc(100% - 5em ) ! important;}
+.fullwidth-6 {width: calc(100% - 6em ) ! important;}
+
+.height-90pc, .height90pc, .most-height, .mostheight { height: 90% !important; }
+.height-80pc, .height80pc { height: 80% !important; }
+.height-70pc, .height70pc { height: 70% !important; }
+.height-60pc, .height60pc { height: 60% !important; }
+.height-50pc, .height50pc, .halfheight { height: 60% !important; }
+
+.width-90pc, .width90pc, .most-width, .mostwidth { width: 90% !important; }
+.width-80pc, .width80pc { width: 80% !important; }
+.w-a {width: auto !important; }
+
+/** !!! MY GOD - WHY DIDN'T I KNOW ABOUT THIS BEFORE!!!!  '*/
+.hfc {
+  height: fit-content;
+}
+
+.wfc {
+  width: fit-content;
+}
+
+.spacing-5 { margin: 5px; padding: 5px; border-radius: 5px; }
+
+.oh {overflow: hidden;}
+
+.big-box-shadow {
+  box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+ }
+
+.box-shadow {
+  box-shadow: inset 0 0 2px 0 rgba(57, 140, 255, 0.8);
+}
+
+
+
+.box-shadow-2 {
+  box-shadow: inset 0 0 2px 0 rgba(57, 140, 255, 0.8);
+}
+
+
+
+/* The CONTAINING element must be RELATIVE*/
+.horizontal-center { @include make-horizontal-center }
+.h-center { @include make-horizontal-center }
+.vertical-center { @include make-vertical-center }
+.v-center { @include make-vertical-center }
+
+
+/*The block to center in the containing block should have this class. The
+containing block needs to be positioned relatively*/
+.center {
+  margin: 0;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform:translate(-50%,-50%);
+
+}
+
+
+
+
+
+/// FLEXES
+
+/* Centers a block within an enclosing positioned block*/
+/* Not sure the enclosing block needs this class, but keep in case */
+/* Also seems to work with display: inline-flex */
+/* This doesn't even seem to require that the contained centered box be positioned*/
+.fcenter, .center-flex {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.vertical-center-flex, .vfcenter {
+  position: relative;
+  flex-direction: column;
+  display: flex;
+  justify-content: center;
+}
+.align-flex-items-start {
+  align-items: flex-start;
+}
+
+.justify-end {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.justify-start {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.justify-evenly {
+  display: flex; 
+  justify-content: space-evenly;
+}
+
+.justify-around {
+  display: flex;
+  justify-content: space-around;
+}
+.justify-between {
+  display: flex;
+  justify-content: space-between;
+}
+.h-flex { //Just to be consistent
+  display: flex;
+}
+.v-flex {
+  display: flex;
+  flex-direction: column;
+}
+.f-center, .flex-center {
+  display: flex;
+  justify-content: center;
+}
+
+.fi-fixed {
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+
+.fi-resize {
+  flex-grow: 1;
+  flex-shrink: 1;
+}
+
+.fg,.fg1 { flex-grow: 1; }
+.fg2 { flex-grow: 2; }
+.fg3 { flex-grow: 3; }
+.fg4 { flex-grow: 4; }
+.fg5 { flex-grow: 5; }
+.fs, .fs1 { flex-shrink: 1; }
+
+.nfg,.fg0 { flex-grow: 0; }
+.nfs, .fs0 { flex-shrink: 0; }
+
+.fw {flex-wrap:wrap;}
+
+.flex-rowwrap {
+  display:flex;
+  flex-wrap: wrap;
+  height: fit-content;
+  justify-content: stretch;
+}
+
+.flex-rownowrap {
+  display:flex;
+  flex-wrap: nowrap;
+  height: fit-content;
+  justify-content: stretch;
+}
+
+.f-between, .flex-between {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+}
+.flex-around {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-around;
+}
+.fb49 { flex-basis: 49%; }
+.fb50 { flex-basis: 50%; }
+.fb25 { flex-basis: 25%; }
+.fb75 { flex-basis: 75%; }
+.fb33 { flex-basis: 33%; }
+.fb66 { flex-basis: 66%; }
+.fb10 { flex-basis: 10%; }
+
+.fb360 {display: flex; width: 360px} //The max width you can count on for a phone
+.fbm360 {display: flex; min-width: 360px} //Won't get smaller than that'
+
+.w49 {width: 49%;}
+.w360 {width: 360px;}
+.wm360,.mw360 {min-width: 360px;}
+
+.iflex16 {display: inline-flex; flex-basis: (1/6)*100%; }
+.iflex26 {display: inline-flex; flex-basis: (2/6)*100%; }
+.iflex36 {display: inline-flex; flex-basis: (3/6)*100%; }
+.iflex46 {display: inline-flex; flex-basis: (4/6)*100%; }
+.iflex56 {display: inline-flex; flex-basis: (5/6)*100%; }
+.iflex66 {display: inline-flex; flex-basis: (6/6)*100%; }
+
+/*
+.flex-between:after {
+  content: "";
+  flex: auto;
+}
+*/
+/** Apply to the flex box */
+.flexalignstretch {align-items: stretch;}
+.flexjustifyaround {justify-content: space-around;}
+
+/** Apply to the flex items */
+.flexgrow-2, .flexgrow2 { flex-grow: 2; }
+.flexgrow-1, .flexgrow1, .flex-grow, .flexgrow { flex-grow: 1; }
+.no-grow, .flexgrow-0, .flexgrow0 { flex-grow: 0; }
+.flex-grow { flex-grow: 5; }
+
+.iflex, .inline-flex { display: inline-flex;}
+
+
+/******   Text Tweaks ***********/
+.small { font-size: small ! important; }
+.smaller { font-size: smaller ! important; }
+.larger { font-size: large ! important; }
+.large { font-size: large ! important; }
+.x-large { font-size: x-large ! important; }
+.xx-large { font-size: xx-large ! important; }
+.table-cell { display: table-cell ! important; }
+.vertical-align-bottom { vertical-align: bottom !important; }
+
+
+
+
+table.no-borders td,
+table.noborders td,
+table.no-borders th,
+table.noborders th {
+  border: none;
+}
+
+
+$boolean-input-zoom: 2 !default;
+input.boolean.viewable {
+  zoom: $boolean-input-zoom;
+}
+/** Make a link ordinary again..*/
+a.just-link {
+  color: blue;
+  text-decoration: underline;
+  border: none;
+}
+a.just-link:focus,
+a.just-link:hover {
+  outline: none;
+}
+a.just-link:hover {
+  color: #00c;
+}
+
+
+a.undecorated:hover ,
+a.undecorated {
+  text-decoration: none;
+}
+
+
+// For initially hidden help divs, pop up when help button clicked
+#helpTitle, 
+#helpContent {
+  display: none;
+}
+.btn-wrp {
+  padding: 0;
+  text-align: center;
+}
+
+.row-flex, 
+.flex-row, 
+.flex-col, 
+.col-flex {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+.flex-col, 
+.col-flex, .flex-column {
+  flex-direction: column;
+}
+
+
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+}
+
+/* Throw in everything here to try to center contents */
+@mixin make-flex-horizontal-centerer {
+  display: flex;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.horizontal-centerer { @include make-flex-horizontal-centerer}
+
+.currency, .number, .numeric, .int, .integer, .jq-format-currency {
+  text-align: right;
+}
+
+/** Depends on being fixed to the window */
+.hover-detail-frame {
+  background: #fff;
+  padding: 3rem;
+  border-radius: .5em;
+  border: solid red 1px;
+  position: fixed;
+  z-index: 99999;
+  margin: 0;
+  left: 50%;
+  //top: 50%;
+  top: 25rem;
+  transform:translate(-50%,-50%);
+  min-width: 80%;
+  min-height: 10rem;
+  box-shadow: inset 0 0 20px 0 #1d2845, 0 1px 0 white;
+}
+
+.hover-title {
+  font-size: larger;
+  color: white;
+  background-color: #334;
+  width: 100%;
+  font-weight: 500;
+  margin: 0;
+  margin-bottom: .5rem;
+  padding: .5rem;
+  text-align: center;
+}
+
+.array-head {
+  font-size: larger;
+  font-weight: 500;
+  text-align: center;
+  margin-top: .5rem;
+  margin-bottom: .5rem;
+  
+}
+
+
+
+.faded {
+  background-color: rgba(200,200,200,.5);
+  
+}
+
+
+@media print {
+  * {
+    background-color: white;
+  }
+  .print-button {
+    display: none ! important;
+  }
+
+  .no-print {
+    display: none ! important;
+  }
+  div.template {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    background-color: white !important;
+  }
+
+  .print-black {
+    color: black ! important;
+    text-decoration: none ! important;
+    }
+    .break-after {
+      page-break-after: always;
+    }
+    .break-before {
+      page-break-before: always;
+    }
+}
+
+@media screen {
+  body div *.print-only, body div *.no-screen {
+    display: none !important;
+  }
+}
+
+.row.col-inner-border [class*="col"] {
+   @extend .inner-border;
+}
+/** A jQuery UI Dialog Box that should pop-up on page load if it exists*/
+
+.js-dialog-content,
+.jqui-dlg-pop-load-wrapper,
+.jqui-dlg-pop-load {
+  display: none;
+}
+
+$pk-warn-dlg-titlebar-color: red !default;
+.pk-warn-dlg .ui-dialog-titlebar {
+  font-size: large;
+  color: $pk-warn-dlg-titlebar-color;
+  font-weight: bold;
+}
+
+$pk-warn-dlg-color: #800 !default;
+.pk-warn-dlg.error-dlg-box li {
+  font-size: large;
+  color: $pk-warn-dlg-color;
+}
+
+$pk-warn-dlg-background: rgba(255,100,100,.4) !default;
+div.error-popup-box.ui-dialog-content {
+  background: $pk-warn-dlg-background;
+}
+
+.pre-wrap {
+  white-space: pre-wrap;
+}
+
+
+/**************   HERE IS WHERE TO PUT ALL VARIED MEDIA SIZE OPTS ***********/
+
+//Try to make useful media size classes for all breakpoints
+//Using my mixins above-bp, below-bp, between-bps
+
+@each $bp in map-keys($grid-breakpoints) {
+  .d-block-below-#{$bp} {
+    @include below-bp($bp) {
+      display: block !important;
+      //display: block;
+    }
+  }
+  .d-block-within-below-#{$bp} {
+    @include below-bp($bp) {
+      flex-wrap: wrap !important;
+    }
+  }
+  // Any divs CONTAINED in this el must be block
+  .d-block-within-below-#{$bp} > div {
+    @include below-bp($bp) {
+      display: block !important;
+      width: 100% !important;
+    }
+  }
+  .hidden-#{$bp}-down,
+  .d-none-below-#{$bp} {
+    @include below-bp($bp) {
+      display: none !important;
+    }
+  }
+}
+
+
+@mixin mk-offsets() {
+  @for $i from 0 through 100 {
+    $ex: if($i!=0, -$i, null);
+    $sz: $i/10 *1rem;
+    .top#{$ex} {
+      top: $sz;
+    }
+    .left#{$ex} {
+      left: $sz;
+    }
+  }
+}
+
+@include mk-offsets;
+
+// An initial default table style for pk-tbl
+
+$pk-tbl-border-color: #aaa !default;
+
+table.pk-tbl,
+table.pk-tbl {
+  td, th {
+  border-collapse: collapse;
+  border: solid $pk-tbl-border-color 1px;
+  padding: .5em;
+  }
+}
+.border-bottom, .underline {
+  border-bottom: solid 1px;
+  border-radius: 0;
+}
+.sect-sep {
+  border-bottom: solid 1px $pk-tbl-border-color;
+  font-weight: bold;
+  margin-top: .5em;
+}
+// Make some inline emphasis
+.bb, .br {
+  font-weight: bold;
+  color: #004;
+  display: inline-block;
+}
+.br {
+  color: #400;
+}
+
+.emr, .emb {
+  font-style: italic;
+  display: inline-block;
+  color: #004;
+}
+.emr {
+  color: #400;
+}
+
+.embr {
+  @extend .emr;
+  @extend .br;
+}
+
+.embb {
+  @extend .emb;
+  @extend .bb;
+}
+
+.bw2 { border-width: 2px !important; }
+.bw3 { border-width: 3px !important; }
+
+
+
+/****  Assume some nice fonts: **/
+/**
+
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700|Open+Sans:400,700|Oswald:400,700|Lato:400,700|Roboto:400,700|Raleway:400,600,700"
+*/
+
+.oswald { font-family: 'Oswald', verdana; }
+.lato { font-family: 'Lato', arial; }
+.roboto { font-family: 'Roboto', verdana; }
+.open-sans { font-family: 'Open Sans', verdana; }
+.montserrat { font-family: 'Montserrat', verdana; }
+.raleway { font-family: 'Raleway', verdana; }
+.droid-sans { font-family: 'Droid Sans', verdana; }
+.s-sans-pro {font-family: 'Source Sans Pro', sans-serif;}
+
+/** Test with:
+<div class='x-large oswald'>This is Oswald</div>
+<div class='x-large lato'>This is Lato</div>
+<div class='x-large roboto'>This is Roboto</div>
+<div class='x-large open-sans'>This is Open Sans</div>
+<div class='x-large montserrat'>This is Montesserat</div>
+<div class='x-large raleway'>This is Raleway</div>
+*/
+
+
+.table { display: table !important; }
+.flex { display: flex !important; }
+
+
+.align-self-center {align-self: center;}
+
+.inv-blue {
+  background-color: #008;
+  color: #fff;
+}
+
+.inv-red {
+  background-color: #800;
+  color: #fff;
+}
+.inv-green {
+  background-color: #080;
+  color: #fff;
+}
+
+.b {
+  font-weight: bold;
+}
+
+hr {
+  @extend .border;
+}
+
+tr {
+  page-break-inside: avoid !important;
+}
+
+//Experimental - to get the CHOSEN value of a select control centered
+
+select.select-center {
+  text-align: center;
+  text-align-last: center;
+}
+
+input::placeholder { color: #999 !important; }
+
+.relative { position: relative !important; }
+.absolute { position: absolute !important; }
+.fixed { position: absolute !important; }
+
+.under { z-index: -1 !important; }
+
+.link-unstyled, .link-unstyled:link, .link-unstyled:hover {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+.reszable, .h-center {
+  z-index: 10;
+}
+
+.vue-popup {
+  position: fixed;
+  top: 10%;
+  @extend .h-center;
+}
+
+
+// Make classes that will force a break between columns at certain breakpoints-
+// the regular sm, md, lg, but also pixels brk-sm, brk-md, brk-30
+@mixin mk-breaks {
+  $breaks: ('sm', 'md', 'lg', 'xl', 50, 100, 150, 200, 250, 300, 350, 400,
+    450, 500, 550, 600, 650, 700);
+  @each $break in $breaks {
+    .brk-#{$break} {
+      @include below-bp($break) {
+        display: block;
+        width: 100%;
+        height: 0;
+        margin: 0;
+        padding: 0;
+      }
+    }
+  }
+}
+
+@include mk-breaks;
+
+//from _pk-bs4-mods
+/** Mods/add-ons to default BS 4 */
+/**Copyight (C) 2016 by Paul Kirkaas - All Rights Reserved */
+
+.form-control {
+  height: auto;
+}
+
+/** Replacing removed elements from BS 4 Alpha -> Beta **/
+$brand-inverse:  #292b2c !default;
+.navbar-inverse .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255, 255, 255, 0.5)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 8h24M4 16h24M4 24h24'/%3E%3C/svg%3E");
+}
+/*
+*/
+
+$input-font-size: 1em !default;
+
+.container-fluid.content-main.pk-main {
+  padding: 0;
+  margin: 0;
+  position: relative;
+}
+
+.pk-template-content {
+  padding: 0 2em;
+}
+div.pk-template {
+  padding: 0;
+  margin: 0;
+}
+
+//To dropdown menus on hover. Has a JS part also, in jquery-ui-config
+.dropdown:hover>.dropdown-menu {
+  margin: 0;
+  display: block;
+}
+//Customizing TAB inactive Background & Font color
+.nav-tabs .nav-link {
+  @if  variable-exists(nav-tabs-inactive-link-hover-color) {
+    color: $nav-tabs-inactive-link-hover-color;
+  }
+  @if  variable-exists(nav-tabs-inactive-link-hover-bg) {
+    background-color: $nav-tabs-inactive-link-hover-bg
+  }
+}
+
+@if   variable-exists(nav-tabs-bg-color) {
+  ul.nav.nav-tabs {
+    background-color: $nav-tabs-bg-color ;
+  }
+}
+
+$z-pk-top-menu: 10000 !default;
+$z-sub-nav: 5000 !default;
+$nav-link-color: #eee !default;
+
+$site-brand-menu-img-max-width: 24px !default;
+$site-brand-menu-img-max-height: 24px !default;
+
+img.head-img.img-fluid.tpm-head-img,
+img.navbar-brand-img {
+  $site-brand-menu-img-margin: 0 !default;
+  $site-brand-menu-img-padding: 0 !default;
+  margin: $site-brand-menu-img-margin;
+  padding: $site-brand-menu-img-padding;
+  max-width: $site-brand-menu-img-max-width;
+  max-height: $site-brand-menu-img-max-height;
+}
+
+.fixed-menu-container {
+  z-index: 100;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  padding: 0;
+  margin: 0;
+  @include below-bp(md) {
+   position: relative;
+  }
+}
+
+body .navbar {
+  padding: .5em 1em;
+}
+
+.zup:hover {
+  z-index: 9999999 !important;
+}
+// Play with customizing navbars
+//$nav-item-after-nav-item-margin-left: .5rem !default;
+$nav-item-hpad: .25em !default;
+$pk-nav-nav-link-margin-top: 5px !default;
+$pk-top-menu-height: 40px !default;
+$pk-nav-sub-nav-menu-height: 35px !default;
+$pk-top-menu-nav-link-margin-top: 0 !default;
+//$pk-top-menu-font-size: .8rem !default;
+$pk-top-menu-font-size: 1rem !default;
+$menus-wrapper-height: $pk-top-menu-height +  $pk-nav-sub-nav-menu-height !default;
+.menus-wrapper {
+  height: $menus-wrapper-height;
+  border: solid blue 1px;
+}
+body nav.pk-nav.sub-nav {
+  position: fixed;
+  top: $pk-top-menu-height;
+  height: $pk-nav-sub-nav-menu-height;
+}
+body nav.navbar.pk-top-menu {
+  position: fixed;
+  height: $pk-top-menu-height;
+  font-size: $pk-top-menu-font-size;
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: $z-pk-top-menu;
+  background-color: $brand-inverse;
+  flex-direction: row;
+ // height: $pk-top-menu-height;
+  //nav-link needs the same padding as the inline login form
+  .nav-link, .nav-text {
+    margin-top: $pk-top-menu-nav-link-margin-top;
+    padding: 0 1em;
+    //color: #eee;
+    color: $nav-link-color;
+    @include below-bp(sm) {
+      margin: 0;
+  //    padding: .5em 0;
+    }
+    &:hover {
+      color: white;
+      text-shadow:0 0 1px white;
+      cursor: pointer;
+    }
+  }
+  .navbar-brand.nav-item {
+    font-size: inherit;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-right: .8em;
+  }
+
+
+//@include bg-variant('.bg-inverse', $brand-inverse);
+  ul.nav.navbar-nav {
+    //z-index: 100000;
+    background-color: $brand-inverse;
+    position: relative;
+    top: 0;
+  }
+  .nav-item {
+  //font-size: $pk-top-menu-font-size;
+    padding-right: $nav-item-hpad; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .nav-item + .nav-item {
+    //margin-left: $nav-item-after-nav-item-margin-left;
+    padding-left: $nav-item-hpad;
+
+  }
+}
+
+/*
+body nav.navbar.pk-top-menu {
+  @include below-bp(md) {
+   position: relative;
+  }
+}
+*/
+
+.droponhover.dropdown:hover .dropdown-menu,
+.droponhover.dropdown .dropdown-menu:hover {
+  display: block;
+} 
+
+ul.nav.navbar-nav.li {
+  text-align: center;
+}
+
+
+//Play with imports from SBC-Exchange
+.pk-top-menu ul.nav.navbar-nav > .nav-item {
+  margin-top: 0;
+}
+
+nav.navbar {
+  margin-bottom: 0;
+}
+
+
+.site-name {
+  text-shadow:0 0 1px #400;
+}
+
+//  Sub-menu
+
+  nav.navbar.pk-nav.sub-nav {
+//    position: fixed;
+    z-index: $z-sub-nav;
+    left: 0;
+    width: 100%;
+//    top: $pk-top-menu-height;
+
+//    height: $pk-top-menu-height;
+    flex-direction: row;
+    background: $pk-nav-sub-nav-background;
+    .nav-link {
+      color:  $pk-nav-sub-nav-color;
+      //font-size: 1rem;
+      &:hover {
+        color: white;
+        text-shadow:0 0 1px white;
+      }
+    }
+    .nav-item + .nav-item {
+      margin-left: 1.5rem;
+
+    }
+  } 
+
+
+ body nav.navbar.pk-nav.sub-nav {
+    padding-top: 0;
+  }
+
+  nav.pk-nav.sub-nav ul.nav.navbar-nav {
+    padding-top: 0;
+  }
+
+  nav.pk-nav.sub-nav ul.nav.navbar-nav {
+    padding-top: 0;
+  }
+
+  div.dropdown-menu a.nav.navbar.pk-nav.sub-nav .dropdown-menu {
+    background: $pk-nav-sub-nav-background;
+    color:  $pk-nav-sub-nav-color;
+      &:hover {
+        color:   $pk-nav-sub-nav-background;
+      }
+  }
+
+
+  div.container-fluid.theme-showcase.app-tpl {
+    //If we need this, use JS
+    //position: absolute;
+    margin: 0;
+    width: 100%;
+    left: 0;
+    //top: 2 * $pk-top-menu-height; 
+  }
+
+
+//Tootik Override - add 'center' config
+// Positions (From tootik scss 'right')
+[data-tootik][data-tootik-conf*='center'] {
+  &:before {
+    left: 50%;
+    top: 50%;
+    transform: translate(-50% , -50%);
+  }
+  &:after {
+    bottom: auto;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+  &:hover,
+    &:focus {
+    &:before {
+      transform: translate(-50%, -50%);
+    }
+    &:after {
+      transform: translate(-50%, -50%);
+    }
+  }
+}
+//Try making multi-line default
+[data-tootik]:after {
+  z-index: 1999999;
+  min-width: 180px;
+  text-overflow: clip;
+  white-space: normal;
+  word-break: break-word;
+  background-color: $tootik-background;
+  color: $tootik-color;
+  font-family: $tootik-font;
+  font-weight: 500;
+}
+
+//From _pk-effects
+//CSS / Styling that when used together create effects, like tooltips, liking someone, etc
+/**Copyight (C) 2016 by Paul Kirkaas - All Rights Reserved */
+
+// For us with JQuery Dialog Automation
+.js-dialog-content {
+  display: none;
+}
+
+// An element with class drop-hover has display: none, unless
+// the user hovers over a containing element with class 'drop-in'
+// or an immediately preceding sibling element with class 'drop-after'
+
+.drop-hover {
+  display: none;
+  position: absolute;
+  top: 3em;
+  width: 130%;
+  left: -30%;
+  padding: 2px;
+  border-radius: 6px;
+  opacity: 1;
+  background-color: white;
+}
+
+.drop-in {
+  position: relative;
+  background-color: white;
+  opacity: 1;
+  z-index: 10;
+}
+.drop-after:hover + .drop-hover,
+.drop-in:hover .drop-hover {
+  display: block;
+  background-color: white;
+  opacity: 1;
+}
+
+// Speach bubble effects
+div.speech-bubble{
+   margin-left: 2em;;
+   margin-right: 2em;;
+   padding: 1em;
+   color: white;
+   display: inline-block;
+   width: 90%; 
+   min-height: 6em; 
+   border-radius: 1em;
+}
+.bubble-content {
+  width: 100%;
+  float: left;
+}
+div.speech-bubble.left {
+   text-align: left;
+   background: #006;
+}
+div.speech-bubble.right {
+   background: #400;
+}
+// Not browser independent yet - FF & Chrome differ, also w. themselves on refresh
+//div.speech-bubble::before,
+//div.speech-bubble::after {
+//   content:"";
+//   position: absolute;
+//   width: 0;
+//   height: 0;
+//   border-top: 1.5em solid transparent;
+//   border-bottom: 1.5em solid transparent;
+//   margin: 0;
+//}
+//div.speech-bubble.left::before {
+//   border-right: 2.5em solid blue;
+//   margin-left: -3.5em;
+
+//}
+//div.speech-bubble.right:after {
+//   border-left: 2.5em solid red;
+//   margin-left: .5em;
+// //  margin-left: 410px;
+// //  left: 70%;
+//   top: 1.8em;
+//}
+
+
+
+
+
+
+
+
+// Some Bootstrap Mods to make even height columns
+.row-eq-height {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display:         flex;
+}
+
+.rowclass-equalheight {
+    display: table;
+}
+
+.colclass-equalheight {
+    float: none;
+    display: table-cell;
+    vertical-align: top;
+}
+
+// Management of "Favoriting" & Blocking, in combo with JS / AJAX
+
+.social-control-container {
+  height: 4em;
+  text-align: center;
+}
+
+div.blocked,
+div.unblocked,
+div.favorited,
+div.unfavorited {
+  display: inline-block;
+  width: 2em;
+  height: 2em;
+  background-size: contain;
+}
+div.favorited,
+div.unfavorited {
+  transform: translateY(-.5em);
+  margin: auto;
+}
+//// Good to here!
+div.unfavorited {
+  background-image: url('../img/Full-Empty-Star.svg');
+}
+div.favorited {
+  background-image: url('../img/Full-Yellow-Star.svg');
+}
+
+
+div.favorite-toggle.favorited:hover,
+div.favorite-toggle.unfavorited:hover {
+  background-image: url('../img/Full-Half-Star.svg');
+  cursor: pointer;
+}
+
+div.favorite-toggle.favorited::after,
+div.favorite-toggle.unfavorited::after {
+  top: 2em;
+  transform: translateX(-50%);
+  display: block;
+  margin-top: -.3em;
+  position: relative;
+  white-space: pre;
+}
+div.favorite-toggle.unfavorited::after {
+  content: "Not a favorite..";
+  color: #884;
+}
+
+div.favorite-toggle.favorited::after {
+  color: #962;
+  content: 'A Favorite!';
+}
+
+div.favorite-toggle.favorited:hover::after {
+  color: #888;
+  content: 'Unfavorite?';
+}
+
+div.favorite-toggle.unfavorited:hover::after {
+  color: #962;
+  content: "Favorite them!";
+}
+
+
+
+// Similar with Favoriting, but for blocking 
+
+
+div.blocked,
+div.unblocked {
+  border-radius: .5em;
+  background-color: green;
+  line-height:  2em;
+}
+
+div.blocked {
+  background-color: red;
+}
+
+div.unblocked:hover {
+  cursor: pointer;
+  background-color: #800;
+}
+div.blocked:hover {
+  cursor: pointer;
+  background-color: #080;
+}
+
+div.unblocked::before,
+div.blocked::before {
+  font-size: x-large;
+  font-weight: bold;
+}
+div.unblocked::before {
+  content: '\2713';
+}
+div.blocked::before {
+  content: '\2718';
+}
+
+div.blocked::after,
+div.unblocked:after {
+  font-size: small;
+  margin-top: -.3em;
+  white-space: pre;
+  position: relative;
+  display: block;
+  transform: translateX(-60%);
+}
+
+div.blocked::after {
+  color: #600;
+  content: 'Blocked';
+  font-style: italic;
+}
+
+div.unblocked::after {
+  content: 'Unblocked';
+  color: #686;
+}
+
+div.unblocked:hover::after {
+  color: red;
+  content: 'Block User?';
+}
+
+div.blocked:hover::after {
+  color: green;
+  content: 'Unblock User?';
+}
+
+
+// Some button styling, also for divs, and menus?
+$default-pkmvc-button: 1 !default;
+@if $default-pkmvc-button == 1 {
+  body .pkmvc-button:focus,
+  body .pkmvc-button:visited,
+  body .pkmvc-button {
+    font: bold 1em/1 "helvetica neue", helvetica, arial, sans-serif;
+    white-space: nowrap;
+    text-align: center;
+    text-decoration: none;
+    background-image: linear-gradient(to top, #759ae9, #376fe0);
+    border-top: 1px solid #1f58cc;
+    border-right: 1px solid #1b4db3;
+    border-bottom: 1px solid #174299;
+    border-left: 1px solid #1b4db3;
+    border-radius: .3em;
+    box-shadow: inset 0 0 2px 0 rgba(57, 140, 255, 0.8);
+    color: #fff;
+    padding: .5em ;
+    margin: .5em;
+    text-shadow: 0 -1px 1px #1a5ad9;
+  }
+  body .pkmvc-button:focus a,
+  body .pkmvc-button:visited a,
+  body .pkmvc-button a {
+    color: #fff;
+    text-decoration: none;
+  }
+
+  body .pkmvc-button:hover,
+  body .pkmvc-button:hover a {
+      text-decoration: none;
+      color: #ffe;
+  }
+  body .pkmvc-button:hover {
+      background-image: linear-gradient(to top, #557ac9, #174fc0);
+      cursor: pointer; 
+  }
+
+  body .pkmvc-button:active {
+      border-top: 1px solid #1b4db3;
+      border-right: 1px solid #174299;
+      border-bottom: 1px solid #133780;
+      border-left: 1px solid #174299;
+      box-shadow: inset 0 0 5px 2px #1a47a0, 0 1px 0 #eeeeee;
+  }
+}
+
+body .light-button:focus,
+body .light-button:visited,
+body .light-button {
+    font:  1em/1 "helvetica neue", helvetica, arial, sans-serif;
+    display: inline-block;
+    height: 1.5em;
+    white-space: nowrap;
+    text-align: center;
+    text-decoration: none;
+    background-image: linear-gradient(to top, #759aa9, #376fa0);
+    border-top: 1px solid #1f58cc;
+    border-right: 1px solid #1b4db3;
+    border-bottom: 1px solid #174299;
+    border-left: 1px solid #1b4db3;
+    border-radius: .2em;
+    box-shadow: inset 0 0 2px 0 rgba(57, 140, 255, 0.8);
+    color: #fff;
+    font-weight: normal;
+    padding: .3em ;
+    margin: .3em;
+    text-shadow: 0 -1px 1px #1a5ad9;
+}
+  body .light-button:focus a,
+  body .light-button:visited a,
+  body .light-button a {
+    color: #fff;
+    text-decoration: none;
+  }
+
+  body .light-button:hover,
+  body .light-button:hover a {
+      text-decoration: none;
+      color: #ffe;
+  }
+  body .light-button:hover {
+      background-image: linear-gradient(to top, #557ac9, #174fc0);
+      cursor: pointer; 
+  }
+
+  body .light-button:active {
+      border-top: 1px solid #1b4db3;
+      border-right: 1px solid #174299;
+      border-bottom: 1px solid #133780;
+      border-left: 1px solid #174299;
+      box-shadow: inset 0 0 5px 2px #1a47a0, 0 1px 0 #eeeeee;
+  }
+
+
+// Set of behaviors for inline login
+$inline-login-color: #ccf !default;
+.inline-login a{
+  color: $inline-login-color;
+}
+$inline-login-hover-color: #aaf !default;
+.inline-login a:hover{
+  text-decoration: none;
+  color: $inline-login-hover-color;
+}
+
+form.inline-login input.form-control.checkbox-inline {
+  display: inline-block;
+  width: auto;
+  margin-left: .25em;
+  vertical-align: middle;
+}
+
+$inline-login-margin-top: 0 !default;
+//$inline-login-zoom: .9 !default;
+.inline-login {
+  //display: inline-block;
+  margin-top: $inline-login-margin-top;
+ // zoom: $inline-login-zoom;
+}
+
+label.inline-remember {
+  color: white;
+  display: inline-block;
+  margin-left: .5em;
+}
+$inline-login-form-button-hpad: .4rem !default;
+$inline-login-form-button-vpad: .3rem !default;
+form.inline-login.form-inline button.btn-primary {
+  margin-left: .5em;
+  padding:  $inline-login-form-button-vpad $inline-login-form-button-hpad;
+}
+
+form.inline-login.form-inline button.btn-primary {
+  @include below-bp(sm) {
+    margin-left: 0;
+  }
+}
+
+$inline-form-font-size: .8em !default; 
+form.inline-login.form-inline {
+  font-size: $pk-top-menu-font-size;
+  .form-control{
+    //font-size: $inline-form-font-size;
+    font-size: $pk-top-menu-font-size;
+    padding: .25em .5em;
+  }
+}
+
+// Don't remember exactly what key frames were for - some kind of animation - cool
+@keyframes pulse {
+  0% {
+    border: solid red 2px;
+    background-color: rgba(100,100,255,.8);
+  }
+  50% {
+    border: solid blue 2px;
+    background-color: rgba(250,200,100,.8);
+  }
+  100% {
+    border: solid red 2px;
+    background-color: rgba(100,100,255,.8);
+  }
+}
+img.big-picture-dialog {
+  max-width: 70rem;
+  max-height: 70rem;
+  //border-radius: 2rem;
+  //border: solid blue 5px;
+
+} 
+// Basic uniform styling for disabled controls - both the native HTML inputs,
+ // which bootstrap applies a style to through the pseudo-selector :disabled -
+ // but that doesn't work with my compound inputs like "multiselect" Components
+ // that want this styling should have the class 'form-control', and have the
+ // class 'disabled'
+ ///
+
+//div.multiselect.disabled,
+//input[disabled].disabled {
+.form-control.disabled {
+  background-color: #444;
+  color: #888;
+}
+
+.form-control.multiselect {
+  text-align: left;
+}
+
+
+@media (max-width: 600px) {
+  div.speech-bubble{
+    width: auto;
+  }
+  div.speech-bubble:before, 
+  div.speech-bubble:after {
+    content: none;
+  } 
+}
+
+// So far, for automatic delete row buttons
+.pk-compact {
+  margin: 0;
+}
+
+// Try Vertical/Horizontal styling for Radio/YesNo set 
+
+.rs-horizontal .rs-layout {
+  display: inline-block;
+//  margin-left: .5rem;
+//  margin-right: .5rem;
+}
+
+.rs-yn .radio.rs-layout {
+  width: 4rem
+}
+.rs-horizontal .rs-layout.rs-yn label {
+  //margin-left: 1rem;
+  //margin-right: 1rem;
+  //min-width: 4rem;
+
+}
+// To center jQuery UI dialogs - pk-big-picture, but generalizable
+// Need to add "data-dialogClass='pk-big-picture'" to the js-dialog-button 
+
+.ui-dialog.ui-widget.pk-big-picture {
+  @include absolutecenter;
+}
+
+.pimg-del, .del-cross, .del-btn {
+  //background-image: url('/mixed/img/cross-31175.svg');
+  background-repeat: no-repeat;
+  background-size: contain;
+  width: 2rem;
+  height: 2rem;
+  position: absolute;
+  top: 4px;
+  right: 4px;
+}
+
+.pimg-del:hover, .del-cross:hover, .del-btn:hover {
+  cursor: pointer; 
+}
+
+.ajax-loader {
+  //background-image: url('/mixed/img/ajax-loader.gif');
+  background-repeat: no-repeat;
+  background-position: center; 
+}
+
+.actionable {
+  cursor: pointer; 
+  &:hover {
+    font-weight: bold;
+  }
+}
+
+
+.jq-error-dialog .ui-dialog-titlebar {
+  background-color: red;
+  color: white;
+  font-weight: bold;
+  font-size: large;
+}
+
+
+
+///////////////  Classes for changing state by JS - checkboxes & triangles
+
+.box, .triangle {
+  display: inline;
+  cursor: pointer;
+}
+
+// Three checkboxes states
+.box.all-selected {
+  content: "\2611";
+  font-size: 1.2em;
+}
+.box.none-selected {
+  content: "\25A2";
+  font-size: 0.85em;
+}
+.box.some-selected {
+  content: "\25A3";
+}
+
+//Triangles depending if tree branch is open....
+
+
+ul.triangle-tree li div.box.some-selected::before {
+  content: "\25A3";
+  padding-right: 2px;
+}
+ul.triangle-tree li div.box.all-selected::before {
+  content: "\2611";
+  font-size: 1.2em;
+}
+ul.triangle-tree li div.box.none-selected::before {
+  content: "\2610";
+  font-size: 1.4em;
+}
+
+ul.triangle-tree li div.open:before,
+ul.triangle-tree li.open:before {
+  content: "\25BE";
+  font-size: 1.7em;
+}
+ul.triangle-tree li div.closed:before,
+ul.triangle-tree li.closed:before {
+  content: "\25B8";
+  font-size: 1.7em;
+}
+ul.triangle-tree li div.leaf:before,
+ul.triangle-tree li.leaf:before {
+  content: '\2008';
+  padding-right: 0.75em;
+}
+
+
+
+/*****   To show resumes in an iframe & overlay a link */
+// I don't know how to size an embed
+
+.upload-icon-label.embed {
+  position: relative;
+  top: -40px;
+}
+
+.upload-input.embed {
+  position: relative;
+  top: -30px;
+}
+
+$embed-height: 300px !default;
+$embed-width: 200px !default;
+a.embed-cover {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  height: $embed-height - 50px;
+  width: $embed-width;
+  z-index: 100;
+  top: 0;
+  left: 0;
+  background-color: transparent;
+}
+.embed-wrapper {
+  position: relative;
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  height: $embed-height;
+  width: $embed-width;
+  z-index: 100;
+}
+iframe.doc,
+embed.doc {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 0;
+}
+/*
+*/
+
+/**
+   Merged from _pk-sitestyles
+   Copyight (C) 2016 by Paul Kirkaas - All Rights Reserved */
+/** General Styles available to all sites - with default variables
+ * overridable in individual sites
+ */
+
+:root {
+  font-family: verdana;
+}
+
+.pk-fixed-menu {
+  z-index: 500
+}
+
+/*** Make some default label, wrapper, & input classes, & input frames/containers
+*/
+$inp-cont-width: 50rem !default;
+
+.input-row {//Flex, wrap, holds many input cards, wraps
+  display: flex;
+  flex-wrap: wrap;
+  background-color: #efefef;
+}
+.input-card-5, .input-card-4, .input-card-3, .input-card-2, .input-card-1 {
+  padding: 2px;
+  margin: 2px;
+  display: inline-block;
+  background-color: #ded;
+}
+.input-card-5 { //Holds several inputs, but is of finite size
+  width: 500px;
+}
+.input-card-4 { width: 400px; }
+.input-card-3 { width: 300px; }
+.input-card-2 { width: 200px; }
+.input-card-1 { width: 100px; }
+
+.fv, .fh  { display: flex; }
+.fv {flex-direction: column;}
+.fv200, .fh200 { display: flex; width: 200px; }
+.fv200 { flex-direction: column; }
+
+//Wraps an input or input & label
+.ajax-wrap-css {
+  width: 100%;
+  //padding: 2px;
+  margin: 2px;
+  display: flex;
+  border: solid #ddd 1px;
+}
+  
+$ajax-inp-height: 2em !default;
+
+.ajax-select-css,
+.ajax-chcbxinp-css,
+.ajax-inp-css{
+  color: #222;
+  height: $ajax-inp-height;
+  line-height: $ajax-inp-height;
+  border: solid #aaa 1px;
+  padding: 2px;
+  display: block;
+  margin: 0;
+  background-color: #FAFFBD ;
+  &:hover,:focus {
+    border: solid #bbf 1px;
+    box-shadow: 3px 2px 7px 0px rgba(0,0,255,1);
+    background-color: #fff;
+  }
+  
+}
+.ajax-select-css,
+.ajax-inp-css{
+  width:100%;
+}
+
+.ajax-chcbxlbl-css,
+.ajax-lbl-css {
+  /*
+  color: $sdblue;
+  background-color: #fefefe;
+  */
+  background-color: #448;
+  color: white;
+  border-radius: 5px;
+  text-align:center;
+  padding: 2px;
+}
+.ajax-lbl-css {
+  width: 100%;
+  display: block;
+}
+
+$checkbox-width: 2rem !default;
+.ajax-chcbxlbl-css {
+  width: calc(100% - 3rem);
+  display: inline-block;
+}
+
+.ajax-chcbxinp-css {
+  display: inline-block;
+  width: $checkbox-width;
+}
+
+// Search/criteria styles
+$dont-care-back: #ccc !default;
+$do-care-back: #fff !default;
+
+select.search-crit.dont-care {
+  background-color: $dont-care-back;
+  //background-color: fuchsia;
+ // background-color: green;
+}
+select.search-crit.do-care {
+  background-color: $do-care-back;
+}
+
+
+
+//div.row.search fieldset label {
+div.search fieldset label {
+    //font-size: 1.2rem;
+    text-align: center;
+    font-weight: 600;
+    color: #006;
+    margin-bottom: 0;
+}
+div.pk-checkbox input[type='checkbox'] {
+  margin-right: 1rem;
+}
+
+//div.row.search div.multiselect.form-control label {
+div.search div.multiselect.form-control label {
+  font-size: 1em;
+  color: #400;
+  margin-left: .5rem;
+  text-align: left;
+}
+
+select.form-control.search-crit {
+  text-align-last: center;
+  display: inline-block;
+  font-size: 1em;
+  color: #000;
+}
+
+
+
+//div.row.search {
+div.search {
+  margin-top: 1.5em;
+  fieldset.search-crit-val-pair {
+    border: solid blue 1px;
+    border-radius: .5em;
+    text-align: center;
+
+  > label {
+    //font-size: 1.2rem;
+    text-align: center;
+    font-weight: 600;
+    color: #006;
+  }
+  }
+}
+
+div.pk-checkbox input[type='checkbox'] {
+  margin-right: 1rem;
+}
+
+
+
+
+
+$body-font-size: 14px !default;
+body {
+  font-size: $body-font-size;
+  padding: 0;
+}
+$page-template-border:  solid blue 1px !default;
+$page-template-padding:  5px !default;
+$page-template-margin:  5px !default;
+.page-template {
+  //border: solid blue 1px;
+  width:  100%;
+  padding: $page-template-padding;
+  margin: $page-template-margin;
+  @include below-bp(sm) {
+   margin: 1px;
+   padding: 1px;
+  }
+}
+
+.pk-warn-dlg.error-dlg-box {
+  position: fixed;
+  top: 100px;
+  z-index: 10000;
+}
+
+//Confirm Action jquery dialog styles
+.ui-dialog.confirm-dialog {
+  font-size: x-large;
+  text-align: center;
+  .ui-dialog-titlebar {
+    background-color: #6ff;
+    color: #a00;
+  }
+  .confirm-msg {
+    color: #a00;
+    font-weight: bold;
+    padding: 1rem;
+  }
+  .ui-dialog-buttonpane {
+    display: flex;
+    justify-content: stretch;
+  }
+  .ui-dialog-buttonset {
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-evenly;
+    button {
+      @extend .pkmvc-button;
+    }
+  }
+}
+
+.container-fluid {
+  @include below-bp(sm) {
+   margin: 0;
+   padding: 0;
+  }
+}
+
+$page-template-title-hpad: .5em !default;
+$page-template-title-vpad: .25em !default;
+$page-template-title-color: #400 !default;
+$page-template-title-bg: #fff !default;
+$page-template-title-font-size: x-large !default;
+$page-template-title-text-align: center !default;
+$page-template-title-radius: .3em !default;
+$page-title-font: 'Montserrat' !default;
+$page-subtitle-margin-top: .5em !default;
+$page-subtitle-font: 'Montserrat' !default;
+.page-template .page-title {
+   font-size: $page-template-title-font-size;
+   padding: $page-template-title-vpad $page-template-title-hpad;
+   color: $page-template-title-color;
+   background: $page-template-title-bg;
+   text-align: $page-template-title-text-align;
+   border-radius: $page-template-title-radius;
+   font-family: $page-title-font, verdana;
+ }
+
+.page-template .page-title.inverse {
+   background: $page-template-title-color;
+   color: $page-template-title-bg;
+ }
+
+$page-title-img-maxheight: 40px !default;
+$page-title-img-maxwidth: 40px !default;
+$page-title-img-margin-right: 1rem !default;
+.page-template .page-title img {
+  vertical-align: middle;
+  max-height: $page-title-img-maxheight;
+  max-width: $page-title-img-maxwidth;
+ }
+
+$page-template-subtitle-color: #004 !default;
+$page-template-subtitle-bg: #fff !default;
+$page-template-subtitle-font-size: large !default;
+$page-template-subtitle-text-align: left !default;
+$page-template-subtitle-hpad: $page-template-title-hpad !default;
+$page-template-subtitle-vpad: $page-template-title-vpad !default;
+$page-template-subtitle-radius: $page-template-title-radius !default;
+.page-template .page-subtitle {
+   font-size: $page-template-subtitle-font-size;
+   padding: $page-template-subtitle-vpad $page-template-subtitle-hpad;
+   color: $page-template-subtitle-color;
+   background: $page-template-subtitle-bg;
+   text-align: $page-template-subtitle-text-align;
+   border-radius: $page-template-subtitle-radius;
+   font-family: $page-subtitle-font, verdana;
+   margin-top: $page-subtitle-margin-top;
+}
+.page-template .page-subtitle.inverse {
+   background: $page-template-subtitle-color;
+   color: $page-template-subtitle-bg;
+}
+
+$site-lbl-color: #fff !default;
+$site-lbl-background-color: #008 !default;
+$site-val-color: #422 !default;
+$site-negative-value-color: #a22 !default;
+
+.pk-lbl {
+  color: $site-lbl-color;
+  background: $site-lbl-background-color;
+}
+
+.pk-val {
+  color: $site-val-color;
+  display: inline-block;
+  margin: 3px;
+  border: solid #ddd 1px;
+  padding: 3px;
+  background: #ddf;
+  font-weight: bold;
+}
+
+.pk-inp-wrap {
+  border: solid blue 1px;
+}
+
+div input[type=checkbox].pk-inp {
+  width: auto;
+}
+div input[type=checkbox].pk-inp.z1 { zoom: 1.5; }
+div input[type=checkbox].pk-inp.z2 { zoom: 2; }
+
+div input[type=checkbox].search-val.form-control { width: auto; display: inline-flex;}
+
+$pk-inp-font-size: 1em !default;
+$pk-inp-color: #200 !default;
+$pk-inp-font-weight: 500 !default;
+$pk-inp-background: #eee !default;
+$pk-inp-hover-background-color: #fff !default;
+$pk-inp-disabled-color: #888 !default;
+$pk-inp-disabled-background: #bbb !default;
+select.pk-inp,
+textarea.pk-inp,
+input.pk-inp {
+ // @extend .form-control; 
+  padding: 2px 3px;
+  //font-weight: bold;
+  //font-family: 'Times New Roman', serif;
+  font-family: 'Montserrat', arial;
+  font-size: $pk-inp-font-size;
+  //font-size: 16px;
+  font-weight: $pk-inp-font-weight;
+  //font-family: 'Roboto', verdana;
+  color: $pk-inp-color;
+  background: $pk-inp-background;
+  &:hover, &:focus {
+    background-color: $pk-inp-hover-background-color; 
+    box-shadow: 0px 0px 5px 5px rgba(255, 255, 220, .75); 
+  }
+  &:disabled:hover, &:disabled {
+  color: $pk-inp-disabled-color;
+  background: $pk-inp-disabled-background;
+}
+}
+
+select.pk-inp,
+input.pk-inp {
+  display: inline-flex;
+}
+
+
+.v-set .pk-inp { //Vertical set/pair - 
+  width: 100%;
+}
+.pk-pair.stacked { //Label over data - replaced by above
+
+}
+.pk-pair.inline { //Label preceeds data
+
+  .pkp-lbl {
+         }
+  .pkp-data {
+
+  }
+}
+
+div.pk-pair div.checkbox-wrap.pkp-data {
+  //display: inline-block;
+  display: flex;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-grow: 0 !important;
+}
+body div div form div select.pk-inp {
+   &:not([size]):not([multiple]) {
+    height: 1.7 * $pk-inp-font-size;
+   }
+}
+
+.inp-dollar {
+  text-align: right;
+}
+/*
+.inp-dollar::before {
+  content: '$';
+}
+*/
+
+.pk-dollar-value {
+  display: inline-block;
+  text-align: right;
+}
+
+.pk-dollar-value.negative-dollar-value,
+.pk-val.pk-dollar-value.negative-dollar-value {
+  color: $site-negative-value-color;
+}
+
+
+/** For labels under images */
+.image-desc {
+  font-size: .9rem;
+  border-radius: .5em;
+  font-weight: 600;
+  color: #422;
+  text-align: center;
+  margin-top: .5em;
+  background-color: rgba(100,100,255,.5);
+
+}
+
+.row.pk-lbl [class*="col"] {
+   @extend .pk-lbl;
+}
+
+.row.pk-val [class*="col"] {
+   @extend .pk-val;
+}
+
+//A link within a section of text
+//$a-in-text-color: #00a !default;
+$a-in-text-color: inherit !default;
+a.in-text {
+  color: $a-in-text-color;
+  text-decoration: none;
+  text-shadow: .1em .1em .1em  rgba(0,0,0,.3);
+  &:hover {
+    //color: lighten($a-in-text-color, 50%);
+   text-shadow: .1em .1em .3em  rgba(0,0,0,.5);
+  }
+
+}
+
+// A heavier leading line
+$headline-margin-bottom: .5em !default;
+.head-line {
+  display: block;
+ // margin-bottom: $headline-margin-bottom;
+  font-weight: bolder;
+}
+
+.page-template p {
+  margin-bottom: .5em;
+}
+
+//Used in spans to emphasize the site name in text or title
+.site-name-em {
+  //font-weight: bolder;
+  text-shadow: .1rem .1rem .1rem  rgba(0,0,0,.5);
+  font-style: italic;
+}
+
+/** Basis for avatar handling, also pup up ajax dialogs */
+//$img-avatar-max-width: 15rem !default;
+$img-avatar-max-width: auto !default;
+$img-avatar-max-height: 12rem !default;
+$img-avatar-tiny-max-height: 32px !default;
+$img-avatar-micro-max-height: 16px !default;
+
+img.avatar {
+  //max-width: $img-avatar-max-width;
+  max-height: $img-avatar-max-height;
+  padding: 0;
+  margin: 0;
+  border: none;
+  vertical-align: baseline;
+}
+
+img.avatar.small {
+  max-height: $img-avatar-max-height/2;
+}
+img.avatar.xsmall {
+  max-height: $img-avatar-max-height/3;
+}
+img.avatar.tiny {
+  max-height: $img-avatar-tiny-max-height;
+  max-width: $img-avatar-tiny-max-height;
+}
+
+img.avatar.micro {
+  max-height: $img-avatar-micro-max-height;
+  max-width: $img-avatar-micro-max-height;
+}
+
+.min-width, .mw66  {width: $min-width;}
+.mw56 {width: $mw56;}
+.mw46 { width: $mw46;}
+.mw36 { width: $mw36;}
+.mw26 { width: $mw26;}
+.mw16 { width: $mw16;}
+
+
+.basic-box, .bb {
+  @extend .mw66;
+}
+
+.bb-fc {
+  @extend .mw66;
+  //height: fit-content;
+}
+
+.bbborder {
+  @extend .mw66;
+  @extend .border-rad;
+  flex-grow: 1;
+}
+
+.bbfcborder {
+  flex-grow: 1;
+  @extend .bb-fc;
+  @extend .border-rad;
+}
+
+.vflex, .fcol {
+  display: flex;
+  flex-direction: column;
+}
+
+
+
+
+.avatar-frame {
+  margin-left: 2px;
+  margin-right: 2px;
+  display: inline-block;
+  width: $img-avatar-max-width;
+  height:  $img-avatar-max-height;
+  border: solid #888 1px;
+  text-align: center;
+  position: relative;
+  background-color: black;
+}
+
+
+
+
+
+$avatar-desc-width: $img-avatar-max-width !default;
+$avatar-desc-padding: .5rem !default;
+$avatar-desc-margin: .5rem !default;
+$avatar-desc-bg: #eee !default;
+.avatar-desc {
+  width: $avatar-desc-width;
+  padding: $avatar-desc-padding;
+  border: 1px;
+  margin: $avatar-desc-margin;
+  display: inline-block;
+  background: $avatar-desc-bg;
+}
+
+
+.new-msg-cnt {
+  font-weight: 600;
+  color: #f88;
+}
+
+.num-items, .item-desc {
+  display: inline-block;
+}
+
+.template-heading {
+  font-size: large;
+  text-align: center;
+  color: #33a;
+  margin-bottom: .5em;
+}
+
+$template-background-color: #eef !default;
+.template {
+  background-color: $template-background-color;
+}
+
+div.msg.row.from.first-view  {
+  border: solid red 1px;
+}
+div.row.first-view .msg-content {
+  margin-top: 2em;
+}
+div.row.first-view .msg-content::before {
+    position: relative;
+    text-align: center;
+    top: -3em;
+    //content: "New";
+    content: "Unread";
+    font-weight: bold;
+    color: red;
+    display: inline-block;
+    width: 100%;
+}
+
+div.msg.row {
+  border: solid #aaa 1px;
+  background-color: rgba(200, 200, 255, .6);
+  border-radius: .5em;
+  margin-top: .5em;
+  margin-bottom: .5em;
+  padding-bottom: .5em;
+}
+
+
+.msg-content {
+    background-color: rgba(255, 255, 220, 0.6);
+    margin-top: 1em;
+    padding: 1em;
+    min-height: 6em;
+    position: relative;
+}
+
+//The base 'site header' - combine with other classes to make custom headers
+/*
+.sh {
+  border-radius: .5em;
+  font-weight: 600;
+  padding: .3em;
+  margin: .3em;
+}
+*/
+
+/*
+.sh1 { @extend .fs-1; @extend .sh; } 
+.sh2 { @extend .fs-2; @extend .sh; } 
+.sh3 { @extend .fs-3; @extend .sh; } 
+.sh4 { @extend .fs-4; @extend .sh; } 
+.sh5 { @extend .fs-5; @extend .sh; } 
+.sh6 { @extend .fs-6; @extend .sh; } 
+.sh7 { @extend .fs-7; @extend .sh; } 
+.sh8 { @extend .fs-8; @extend .sh; } 
+.sh9 { @extend .fs-9; @extend .sh; } 
+.sh10 { @extend .fs-10; @extend .sh; } 
+*/
+
+
+.inverse-060 {
+  color: white;
+  background-color: #060;
+}
+
+
+.inverse-006 {
+  color: white;
+  background-color: #006;
+}
+
+
+.inverse-600 {
+  color: white;
+  background-color: #600;
+}
+.btn:hover {
+  cursor: pointer;
+}
+img.js-big-picture-button {
+  cursor: pointer;
+}
+
+img.big-picture-img {
+  max-width: 500px;
+}
+/*
+img.js-big-picture-button:hover {
+  cursor: pointer;
+}
+*/
+
+////////////////  Vue Pop-up Classes /////////////
+
+.contact-body-wrapper {
+  border: solid blue 1px;
+  padding: .3rem;
+  border-radius: .5rem;
+  min-width: 35rem;
+  min-height:15rem;
+  background-color: #ccc;
+  
+  
+}
+.contact-header {
+  color: white;
+  background-color: blue;
+  font-weight: bold;
+  font-size: 1.2rem;
+  padding: .3rem;
+  text-align: center;
+  margin: 0;
+}
+.contact-sub-wrap {
+  display: block;
+  padding: .3px;
+  background-color: white;
+  
+}
+
+.contact-ta {
+  display: block;
+  background-color: white;
+  height: 100%;
+}
+.contact-ta-wrap {
+  margin:  3px;
+  height: 100%;
+  width: 100%;
+  padding: 3px;
+  background-color: white;
+}
+.button-row {
+  margin-top: .3rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+.popup-btn {} 
+
+//////   Some background colors & box sized in em that can be nice labels/containers
+//Just add a font-size class to admust them. Also some gradients & box-shadows
+.sbk {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin: .5em;
+  padding: .5em;
+  border-radius: .5em;
+  color: white;
+  font-family: verdana;
+  font-weight: bold;
+}
+
+.bC30 { background-color: #C30; }
+.b193542 { background-color: #193542; }
+.b004BA8 { background-color: #004BA8; }
+.bB94E3C { background-color: #B94E3C; }
+.b772B14 { background-color: #772B14; }
+.b0A4082 { background-color: #0A4082; }
+.b9B59B6 { background-color: #9B59B6; }
+.b1C90F3 { background-color: #1C90F3; }
+.bF4307C { background-color: #F4307C; }
+.b3B5998 { background-color: #3B5998; }
+.b283E4A { background-color: #283E4A; }
+.b0092BD { background-color: #0092BD; }
+.gr1 { border: solid black 2px;}
+
+.bs1 {box-shadow: 2px 2px 1px 1px rgba(0,0,0,.5) }
+.bs2 {box-shadow: 3px 3px 2px 2px rgba(0,0,200,.5) }
+
+.gr2 { background: linear-gradient( #02aab0, #00cdac); }
+.gr3 { background: linear-gradient( to bottom, #0fb8ad 0%, #1fc8db 51%, #2cb5e8 75%); }
+.gr4 { background: linear-gradient( #0fb8ad, #1fc8db); }
+
+//Gotta get some standard label/input/value templates here...
+//Start w. .pk-pair as wrapper - contains label & either input or val field
+//Where pk-inp & pk-val are subclasses of pk-data
+//Side by side or label over input/val
+//Label can be fixed width, input/val can grow or be fixed
+
+//Defaults over-ridden in individual site SCSS's
+$pkp-pair-border: #aaa !default;
+$pkp-pair-border-radius: 0 !default;
+$pkp-pair-pad: .1em .1em !default;
+$pkp-pair-bg: transparent !default;
+$pkp-pair-mg: .1em .1em !default;
+$pkp-lbl-color: #008 !default;
+$pkp-lbl-wght: 400 !default;
+$pkp-lbl-pad: .05em .1em !default;
+$pkp-lbl-mg: .05em .1em !default;
+$pkp-data-color: #404 !default;
+$pkp-data-bg: #fff !default;
+$pkp-data-pad: .05em .1em !default;
+$pkp-data-mg: .05em .05em !default;
+.pk-pair-set { //Group of pk-pairs w. similar appearance
+  display: flex;
+}
+@for $i from 1 through 60 { //Fixed width of label or pair in a set or pair
+  .pk-pair-set.sw#{$i}  {width: $i * 1em;}
+  .pk-pair-set.lw#{$i} .pkp-lbl {width: $i * 1em;}
+  .pk-pair.sw#{$i}  {width: $i * 1em;}
+  .pk-pair.lw#{$i} .pkp-lbl {width: $i * 1em;}
+  .w#{$i}em  {width: $i * 1em;}
+  .w#{$i}rem  {width: $i * 1rem;}
+  .mnw#{$i}em  {min-width: $i * 1em;}
+  .mnw#{$i}rem  {min-width: $i * 1rem;}
+  .mxw#{$i}em  {max-width: $i * 1em;}
+  .mxw#{$i}rem  {max-width: $i * 1rem;}
+  .h#{$i}em  {height: $i * 1em;}
+  .h#{$i}rem  {height: $i * 1rem;}
+  .mnh#{$i}em  {min-height: $i * 1em;}
+  .mnh#{$i}rem  {min-height: $i * 1rem;}
+  .mxh#{$i}em  {max-height: $i * 1em;}
+  .mxh#{$i}rem  {max-height: $i * 1rem;}
+}
+//Example: 
+//      <data-label-pair
+//        :params="{name:'email',label:'Email:',
+//        instance:instance, pair_wrap:'lw20'}">
+//      </data-label-pair>
+// - class="pk-pair lw20" makes the label 20em
+.pk-pair, .pk-pair-row {
+  border: $pkp-pair-border;
+  border-radius: $pkp-pair-border-radius;
+  padding: $pkp-pair-pad;
+  margin: $pkp-pair-mg;
+  background: $pkp-pair-bg;
+  flex-flow:column;
+  display: inline-flex;
+    .pkp-lbl {
+      color: $pkp-lbl-color;
+      font-weight: $pkp-lbl-wght;
+      padding: $pkp-lbl-pad;
+      margin: $pkp-lbl-mg;
+    }
+    .pkp-data {
+      color: $pkp-data-color;
+      background: $pkp-data-bg;
+      padding: $pkp-data-pad;
+      margin: $pkp-data-mg;
+      flex-grow: 1;
+    }
+  }
+
+  .pk-pair-row {
+    flex-direction: row;
+    
+  }
+
+  /** Here, I just assemble components to make CSS classes
+  * First, focus on simple containers - with borders, fonts, margins, colors.
+  * I can't remember all my clever naming conventions many years later, so I just
+  * number the generated properties. 
+  *
+  * basic containers have:
+    spacing (margins & padding - .m1-.m5, .p1-.p5)
+    borders: 
+  */
+//Colors - generate 3 character colors from  0 2 4 6 8 a c e f
+// So any 3 - 2ef, whatever, define a color - which are used to define 3 sets of color classes
+// c-XXX for font, bg-XXX for background, bc-XXX for border color
+// Borders: .border
+// Spacings: A bunch from 1-90 
+//  Paddings: .p1 => .p90  (w. multiple variants!)
+// Margins: .m1 => .m90 (again, varients, top, bottom etc.
+// Font Sizes: .fs0 -> .fs50??
+// Font Weights: .fw-1 => .fw-9
+// Border Radius - weirdly - something wrong but .br--xx works...
+// Displays: .block, .inline, .flex, .iflex .vflex (column)
+// More for Flex CONTAINERS: 
+// Flex Items:
+//    flexgrow: .fg, fg[1-5]
+//     no grow or shrink:  .fi-fixed
+//     resize: .fi-resize
+//    flexgrow: .fg, fg[1-5]
+      
+
+//.spacing-5
+
+.tstx {
+  @extend .flex;
+  @extend .bg-086;
+  @extend .p-8;
+  @extend .m-9;
+  @extend .c-f24;
+  @extend .bc-004;
+  @extend .br--25 !optional;
+  @extend .fs-49;
+
+}
+
+//Pair Wrappers - each item in the pair should also be an item wrapper
+// 2 pair wrapper types - side by side, or stacked.
+.npair-stacked {
+  @extend .iflex;
+  @extend .vflex;
+}

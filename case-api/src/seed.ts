@@ -3,7 +3,6 @@ import {
 	refDefs, fSygData, prisma, fCustomerData, fProjectData,
 	GenObj, getTableMap, clearTables,fReqdata,
 } from './init.js';
-import { Signiflyer,  } from '@prisma/client';
 
 
 

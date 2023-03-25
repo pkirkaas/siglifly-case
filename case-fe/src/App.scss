@@ -1,0 +1,69 @@
+.div {
+	background:#ffe;
+	border: solid black 1px;
+}
+
+.bpm {
+	border: solid #ccc 1px;
+	padding: 2px;
+	margin: 2px;
+	background: #fffffe;
+}
+.bpm2 {
+	@extend .bpm;
+	background: #ffeffe;
+}
+.inline {
+	display: inline-block;
+}
+
+.cname {
+	@extend .inline;
+	@extend .bpm;
+	font-weight: bold;
+	background: #ffffef;
+}
+
+.cabout {
+	@extend .cname;
+	background: #efffef;
+	font-weight: regular;
+	font-style: italic;
+	color: #444;
+}
+
+.crow {
+	@extend .bpm;
+	background: #effeff;
+}
+
+.prewrap {
+	background: #eff;
+	margin: 2px;
+	padding: 2px;
+	border: solid #bbb 1px;
+	white-space: pre-wrap;
+}
+
+.dlabel {
+	font-weight: bold;
+	background: #333;
+	color: #ffe;
+	text-align: center;
+	border: solid #ccc 1px;
+	margin: 2px;
+	padding: 2px;
+
+}
+
+.fit {
+	width: fit-content;
+}
+
+.databox {
+	background: #fef;
+	margin: 2px;
+	padding: 2px;
+	width: fit-content;
+	border: solid #aaa 1px;
+}

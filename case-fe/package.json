@@ -9,16 +9,33 @@
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
+  "oldDeps": {
+    "react-panelgroup": "*",
+    "react-resize-panel": "*"
+  },
   "dependencies": {
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "*",
+    "react-json-tree": "*",
+    "react-router-dom": "*",
+    "react-table": "*",
+    "reactjs-popup": "*",
+    "sass": "^1.60.0",
+    "styled-components": "^5.3.5",
+    "typescript": "*"
+    "pk-ts-common-lib": "git+https://github.com/pkirkaas/pk-ts-common-lib.git#working",
   },
   "devDependencies": {
     "@types/react": "^18.0.28",
-    "pk-ts-common-lib": "git+https://github.com/pkirkaas/pk-ts-common-lib.git#working",
     "@types/react-dom": "^18.0.11",
     "@vitejs/plugin-react": "^3.1.0",
-    "typescript": "^4.9.3",
     "vite": "^4.2.0"
+        "@typescript-eslint/eslint-plugin": "*",
+    "@typescript-eslint/parser": "*",
+    "eslint": "*",
+    "eslint-config-prettier": "*",
+    "eslint-plugin-prettier": "*",
+    "prettier": "*",
+    "typescript": "*"
   }
 }
