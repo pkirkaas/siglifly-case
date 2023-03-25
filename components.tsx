@@ -1,3 +1,5 @@
+export { }
+/*
 import { useState, useEffect } from 'react'
 import { GenObj, isObject,  JSON5Stringify, isEmpty} from './init.js'
 
@@ -32,18 +34,15 @@ export function RenderArr(props) {
   let arrOut = (<div className='crow'>...Waiting</div>);
   if (Array.isArray(arr)) {
     let myArr: any[] = arr;
-    //let barrOut = (<h1>IT IS AN ARRAY!</h1>);
-     let barrOut = (
+    let barrOut = (
       {
         //@ts-ignore
-        let newArr = myArr.map((el, idx) => (
+        myArr.map((el, idx) => (
           <Comp key={idx} {...el} className={compClass} />
         )
         )
       }
     )
-     /*
-      */
   }
   return (arrOut);
 }
@@ -87,3 +86,4 @@ function noFunc() { // To use somewhere
     initApi();
   }, [inited]);
 }
+*/

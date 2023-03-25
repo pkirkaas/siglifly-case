@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react'
 import ReactDOMServer from 'react-dom/server'
 import { StaticRouter } from 'react-router-dom/server'
 import './App.scss'
-import {  getCustomerData, Client, } from './init.js';
+import {  getCustomerData,  } from './init.js';
+import {   Client, } from './components/components.jsx';
 import { Front } from './pages/Front';
 import { Customer } from './pages/Customer';
 import "./scss/site.scss";

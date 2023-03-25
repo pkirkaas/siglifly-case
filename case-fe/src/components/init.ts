@@ -1,2 +1,2 @@
 export * from '../init.js'
-export * from './components';
+//export * from './components.jsx';

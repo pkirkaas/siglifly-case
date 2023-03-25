@@ -3,7 +3,8 @@ import ReactDOMServer from 'react-dom/server'
 import { StaticRouter } from 'react-router-dom/server'
 import '../App.scss'
 import  axios  from 'axios';
-import {  getCustomerData, Client, GenObj, TstJson } from './init.js';
+import {  getCustomerData,  GenObj,  } from './init.js';
+import {   Client, TstJson} from '../components/components.jsx';
 export function Front() {
   let [ares, setAres] = useState({});
 	let [inited, setInited] = useState(0);
