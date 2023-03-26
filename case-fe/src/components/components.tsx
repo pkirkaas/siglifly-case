@@ -46,22 +46,25 @@ export function RenderArr(props) {
       <div className={arrClass}>{arrOut}</div>
     </div>
   );
+}
 
+export const TstComp = (props) => {
+  //@ts-ignore;
+  let tot = typeOf(this);
+  console.log({ tot });
+  /*
+  let cnt = 7;
+  if (!(this.cnt) {
+  //@ts-ignore;
+    this.cnt = 1;
+  }
+  //@ts-ignore;
+  this.cnt++;
+  //@ts-ignore;
+  let cnt = this.cnt;
 
-    //let barrOut = (<h1>IT IS AN ARRAY!</h1>);
-    /*
-     let barrOut = (
-      {
-         myArr.map((el, idx) => {
-           (Comp key={idx} {...el} className={compClass} />)
-         }
-        )
-      }
-    )
-    */
-     /*
-      */
-//  return (arrOut);
+  console.log("This is tstComp w. props:", { props,cnt });
+  return (<div className='inline'>"This is tstComp"</div>)
 }
 
 
