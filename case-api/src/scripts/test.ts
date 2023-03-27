@@ -1,11 +1,17 @@
 import {
 	typeOf, getById, getCustomerData, allProps, allPropsWithTypes, addRelated, findMatches, runCli,
-	prisma, getModelIds, GenObj, strIncludesAny, getRandEls, getTableMap, getPrismax, prismax
+	prisma, getModelIds,getFilledReqs, GenObj, strIncludesAny, getRandEls, getTableMap, getPrismax, prismax
 } from '../init.js';
 
 import { isObject } from 'pk-ts-common-lib';
 
 let tests = {
+
+	filled: async function () {
+		let filled = await getFilledReqs();
+		let cnt = filled.length;
+		console.log({ filled, cnt });
+	},
 	tstFM: async function () {
 		let reqIds = await getModelIds('requirement');
 		let reqId = getRandEls(reqIds);

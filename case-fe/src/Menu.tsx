@@ -19,7 +19,7 @@ export function MenuButton(apage, key) {
 	let label = apage.substring(1).toUpperCase();
 	let url = `${origin}${apage}`;
 	return (
-		<div className='MenuItem'>
+		<div key={key} className='MenuItem'>
 			<div className='MenuLink'>
 				<a href={url}>
 					<div className="MenuLabel">

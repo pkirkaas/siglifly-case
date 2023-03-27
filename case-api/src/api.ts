@@ -2,7 +2,7 @@
 import  express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import { getCustomerData, dtFmt, dbgWrite, dbgWrt } from  './init.js';
+import { getCustomerData, findMatches, getSigniflyers, dtFmt, dbgWrite, dbgWrt } from  './init.js';
 import './init.js';
 const dev = process.env.NODE_ENV !== 'production';
 let PORT = process.env.PORT || '3071';
@@ -30,20 +30,52 @@ app.get('/', async (req, res) => {
 app.get('/api', async (req, res) => {
 	let data = await getCustomerData('all');
 	dbgWrt(data);
-	alog("GET endpoint: /api", { data });
+	alog("GET endpoint: /api",);
 	res.send(data);
 });
 app.get('/api/customers', async (req, res) => {
 	let data = await getCustomerData('all');
-	alog('GET /api/customers',{ data });
+	alog('GET /api/customers');
 	res.send(data);
 });
 
 app.post('/api/customers', async (req, res) => {
 	let data = await getCustomerData('all');
 	let json = req.body;
-	alog('POST /api/customers',{ json, data });
+	alog('POST /api/customers',);
 	res.send(data);
+});
+
+app.get('/api/signiflyers', async (req, res) => {
+	let signiflyers = await getSigniflyers();
+	alog('GET /api/signiflyers', { signiflyers });
+	
+
+	res.send(signiflyers);
+});
+app.get('/api/findmatches/:reqId', async (req, res) => {
+	let qid = req.query.reqId;
+	let id = req.params.reqId;
+	alog({ params:req.params, id, qid });
+	//let matches = await findMatches(id);
+	//alog('GET /api/findmatches',{ id});
+	//res.send(matches);
+	res.send({ testing: true });
+});
+app.post('/api/findmatches', async (req, res) => {
+	let params = req.body;
+	let id = params.reqId;
+	let matches = await findMatches(id);
+	alog('POST /api/findmatches',{ params});
+	res.send(matches);
+});
+
+
+app.post('/api/signiflyers', async (req, res) => {
+	let params = req.body;
+	let signiflyers = await getSigniflyers(params);
+	alog('POST /api/signiflyers',{ params, signiflyers });
+	res.send(signiflyers);
 });
 
 app.get('*', async (req, res) => {

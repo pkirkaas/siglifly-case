@@ -16,12 +16,13 @@
   "dependencies": {
     "pk-ts-common-lib": "git+https://github.com/pkirkaas/pk-ts-common-lib.git#working",
     "react": "^18.2.0",
+    "react-custom-popup": "^1.2.1",
     "react-dom": "*",
     "react-grid-layout": "^1.3.4",
     "react-json-tree": "*",
     "react-router-dom": "*",
     "react-table": "*",
-    "reactjs-popup": "*",
+    "reactjs-popup": "^2.0.5",
     "sass": "^1.60.0",
     "styled-components": "^5.3.5",
     "typescript": "*"

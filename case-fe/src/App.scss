@@ -16,6 +16,10 @@
 .inline {
 	display: inline-block;
 }
+.lrpadh {
+	padding-left: .5em;
+	padding-right: .5em;
+}
 
 .lrpad {
 	padding-left: 1em;
@@ -132,15 +136,106 @@
 
 .border {
 	border: solid #aaa 1px;
-	border-radius: .5em;
+	//border-radius: .5em;
 }
 
 .LabelRowWrapper {
 	@extend .lrboth;
 	@extend .border;
+	@extend .inline;
 	background: #eff;
 
 
+}
+
+.ReqRowWrapper {
+	@extend .LabelRowWrapper;
+	@extend .inline;
+	padding:2px;
+	display: inline-block;
+	border: solid #aaa 1px;
+}
+
+.ReqLabelWrapper {
+	@extend .LabelLabelWrapper;
+	@extend .inline;
+	@extend .invert;
+	@extend .lrpadh;
+	width: 10em;
+	/*
+	display: inline-block;
+	background: blue;
+	*/
+}
+.ReqDataWrapper {
+	@extend .inline;
+	@extend .border;
+	@extend .lrpadh;
+	width: 10em;
+	/*
+	background: red;
+	display: inline-block;
+	*/
+}
+
+.tac {
+	text-align: center;
+}
+
+@mixin mk-widths () {
+  @for $i from 1 through 50 {
+    .w#{$i} { width: #{$i}em; }
+  }
+}
+
+@include mk-widths;
+
+
+
+.ReqRowGrid {
+	display: grid;
+	grid-template-columns: 1fr 1fr; 
+}
+
+.RequirementWrapper {
+	@extend .databox;
+}
+
+.SigniflyerWrapper {
+	@extend .RequirementWrapper;
+}
+
+.DataItemWrapper {
+	@extend .invert;
+	@extend .inline;
+}
+
+.isFilled {
+	@extend .inline;
+	@extend .border;
+	@extend .lrpad;
+	border: solid  #444 1px;
+
+	
+	background: white;
+	color: black;
+	font-weight:bold,
+}
+
+.isNotFilled {
+	@extend .isFilled;
+	background: red;
+}
+
+.AboutData {
+	max-height: 3em;
+	overflow: hidden;
+}
+
+.Icon {
+	max-width: 100px;
+	max-height: 100px;
+	object-fit: contain;
 }
 
 .ProjectLabelWrapper {
@@ -151,9 +246,14 @@
 	@extend .LIWrapperItalic;
 }
 
+.LabelLabelWrapper {
+	@extend .LabelItemWrapper;
+	background: #eff;
+}
+
 .LabelItemWrapper {
 	@extend .inline;
-	@extend .lrboth;
+	//@extend .lrboth;
 	@extend .border;
 	background: #aaf;
 }

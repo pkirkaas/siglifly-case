@@ -1,7 +1,7 @@
 //import { PrismaClient } from '@prisma/client';
 import {
-	dbgWrt, refDefs, fSygData, prisma, fCustomerData, fProjectData,
-	GenObj, getTableMap, clearTables,fReqdata, getRandEls,
+	dbgWrt, addRelated, refDefs, fSygData, prisma, fCustomerData, fProjectData,
+	GenObj, getTableMap, clearTables,fReqdata, getRandEls, prismax,
 } from './init.js';
 
 
@@ -56,8 +56,23 @@ export async function mkFakeReqs(cnt = 15) {
 
 // Lets add SOME Signiflyers to the reqs:
 
-async function addSomeSygs () {
-	let allReqs = await prisma.requirement.findMany({});
+export async function addSomeSigs (pc = 50) {
+	let allReqs = await prismax.requirement.findMany({});
+	let numReqs = allReqs.length;
+	let resarr = [];
+	for (let req of allReqs) {
+		if (Math.random() < (pc / 100)) {
+			let sigs = await req.findMatches();
+			if (sigs.length) {
+				let sig = getRandEls(sigs);
+				let res = await addRelated(req, sig);
+				resarr.push(res);
+			}
+		}
+	}
+	let rlen = resarr.length;
+	console.log(`in seed addSomeSigs - added:`, { rlen });
+	return resarr;
 }
 
 
@@ -70,6 +85,8 @@ async function main() {
 	let clients = await mkFakeCustomers(5);
 	let projects = await mkFakeProjects(8);
 	let reqs = await mkFakeReqs();
+	let addedSigs = await addSomeSigs();
+	console.log("Done seeding");
 }
 
 

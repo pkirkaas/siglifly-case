@@ -3,8 +3,6 @@
  */
 import { add } from 'date-fns';
 import {getModelIds, GenObj, prismax, PkError, prisma, refNames,  refDefs, randInt,} from './init.js';
-//import { Customer } from '@prisma/client';
-//import { customer } from '@prisma/client';
 
 export const customerIncludes = {
 	all: {
@@ -28,8 +26,26 @@ export async function getCustomerData(params:any=null) {
 	if (typeof params === 'string' && (params in customerIncludes)) {
 		query.include = customerIncludes[params];
 	} 
-	
 	//@ts-ignore
 	return await prismax.customer.findMany( query);
-
 }
+
+export async function getSigniflyers(params: any = null) {
+	return await prismax.signiflyer.findMany( );
+}
+
+export async function getFilledReqs() {
+	let filledReqs = prismax.requirement.findMany({
+		where: {
+			//@ts-ignore
+			NOT: { signiflyerId: null }
+		},
+		include: { signiflyer: true },
+});
+	return filledReqs;
+}
+
+/*
+export async function findMatches(reqId) {
+}
+*/

@@ -1,0 +1,372 @@
+.div {
+  background: #ffe;
+  border: solid black 1px;
+}
+
+.bpm, .PageWrapper, .MenuWrapper, .crow, .cname, .cabout, .bpm2 {
+  border: solid #ccc 1px;
+  padding: 2px;
+  margin: 2px;
+  background: #fffffe;
+}
+
+.bpm2 {
+  background: #ffeffe;
+}
+
+.inline, .LabelItemWrapper, .LIWrapperItalic, .ProjectDateWrapper, .LIWrapperBold, .ProjectLabelWrapper, .ProjectName, .LabelLabelWrapper, .DataItemWrapper, .ReqDataWrapper, .ReqLabelWrapper, .LabelRowWrapper, .ReqRowWrapper, .MenuItem, .cname, .cabout {
+  display: inline-block;
+}
+
+.lrpad, .lrboth, .LabelRowWrapper, .ReqRowWrapper {
+  padding-left: 1em;
+  padding-right: 1em;
+}
+
+.lrmargin, .lrboth, .LabelRowWrapper, .ReqRowWrapper {
+  margin-left: 1em;
+  margin-right: 1em;
+}
+
+.cname, .cabout {
+  font-weight: bold;
+  background: #ffffef;
+}
+
+.cabout {
+  background: #efffef;
+  font-weight: regular;
+  font-style: italic;
+  color: #444;
+}
+
+.crow {
+  background: #effeff;
+}
+
+.prewrap {
+  background: #eff;
+  margin: 2px;
+  padding: 2px;
+  border: solid #bbb 1px;
+  white-space: pre-wrap;
+}
+
+.dlabel {
+  font-weight: bold;
+  background: #333;
+  color: #ffe;
+  text-align: center;
+  border: solid #ccc 1px;
+  margin: 2px;
+  padding: 2px;
+}
+
+.fit {
+  width: fit-content;
+}
+
+.databox, .RequirementWrapper {
+  background: #fef;
+  margin: 2px;
+  padding: 2px;
+  width: fit-content;
+  border: solid #aaa 1px;
+}
+
+.MenuItem {
+  border: solid blue 1px;
+  margin-left: 2em;
+  margin-right: 2em;
+  padding-left: 2em;
+  padding-right: 2em;
+  border-radius: 0.5em;
+  background-color: #444;
+  color: #ffe;
+}
+
+.MenuLink {
+  color: #ffe;
+}
+
+.MenuLabel {
+  color: #ffe;
+}
+
+.MenuWrapper {
+  background: #aaa;
+}
+
+.invert, .DataItemWrapper, .ReqLabelWrapper {
+  background: black;
+  color: white;
+}
+
+.unvert {
+  background: white;
+  color: black;
+}
+
+.invr {
+  background: #400;
+  color: #eef;
+}
+
+.invb {
+  background: #004;
+  color: #fee;
+}
+
+.border, .LabelItemWrapper, .LIWrapperItalic, .ProjectDateWrapper, .LIWrapperBold, .ProjectLabelWrapper, .ProjectName, .LabelLabelWrapper, .ReqLabelWrapper, .ReqDataWrapper, .LabelRowWrapper, .ReqRowWrapper {
+  border: solid #aaa 1px;
+  border-radius: 0.5em;
+}
+
+.LabelRowWrapper, .ReqRowWrapper {
+  background: #eff;
+}
+
+.ReqRowWrapper {
+  padding: 2px;
+  display: inline-block;
+  border: solid #aaa 1px;
+}
+
+.ReqLabelWrapper {
+  width: 10em;
+  /*
+  display: inline-block;
+  background: blue;
+  */
+}
+
+.ReqDataWrapper {
+  width: 10em;
+  /*
+  background: red;
+  display: inline-block;
+  */
+}
+
+.w1 {
+  width: 1em;
+}
+
+.w2 {
+  width: 2em;
+}
+
+.w3 {
+  width: 3em;
+}
+
+.w4 {
+  width: 4em;
+}
+
+.w5 {
+  width: 5em;
+}
+
+.w6 {
+  width: 6em;
+}
+
+.w7 {
+  width: 7em;
+}
+
+.w8 {
+  width: 8em;
+}
+
+.w9 {
+  width: 9em;
+}
+
+.w10 {
+  width: 10em;
+}
+
+.w11 {
+  width: 11em;
+}
+
+.w12 {
+  width: 12em;
+}
+
+.w13 {
+  width: 13em;
+}
+
+.w14 {
+  width: 14em;
+}
+
+.w15 {
+  width: 15em;
+}
+
+.w16 {
+  width: 16em;
+}
+
+.w17 {
+  width: 17em;
+}
+
+.w18 {
+  width: 18em;
+}
+
+.w19 {
+  width: 19em;
+}
+
+.w20 {
+  width: 20em;
+}
+
+.w21 {
+  width: 21em;
+}
+
+.w22 {
+  width: 22em;
+}
+
+.w23 {
+  width: 23em;
+}
+
+.w24 {
+  width: 24em;
+}
+
+.w25 {
+  width: 25em;
+}
+
+.w26 {
+  width: 26em;
+}
+
+.w27 {
+  width: 27em;
+}
+
+.w28 {
+  width: 28em;
+}
+
+.w29 {
+  width: 29em;
+}
+
+.w30 {
+  width: 30em;
+}
+
+.w31 {
+  width: 31em;
+}
+
+.w32 {
+  width: 32em;
+}
+
+.w33 {
+  width: 33em;
+}
+
+.w34 {
+  width: 34em;
+}
+
+.w35 {
+  width: 35em;
+}
+
+.w36 {
+  width: 36em;
+}
+
+.w37 {
+  width: 37em;
+}
+
+.w38 {
+  width: 38em;
+}
+
+.w39 {
+  width: 39em;
+}
+
+.w40 {
+  width: 40em;
+}
+
+.w41 {
+  width: 41em;
+}
+
+.w42 {
+  width: 42em;
+}
+
+.w43 {
+  width: 43em;
+}
+
+.w44 {
+  width: 44em;
+}
+
+.w45 {
+  width: 45em;
+}
+
+.w46 {
+  width: 46em;
+}
+
+.w47 {
+  width: 47em;
+}
+
+.w48 {
+  width: 48em;
+}
+
+.w49 {
+  width: 49em;
+}
+
+.w50 {
+  width: 50em;
+}
+
+.ReqRowGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.LabelLabelWrapper, .ReqLabelWrapper {
+  background: #eff;
+}
+
+.LabelItemWrapper, .LIWrapperItalic, .ProjectDateWrapper, .LIWrapperBold, .ProjectLabelWrapper, .ProjectName, .LabelLabelWrapper, .ReqLabelWrapper {
+  background: #aaf;
+}
+
+.LIWrapperBold, .ProjectLabelWrapper {
+  font-weight: bold;
+}
+
+.LIWrapperItalic, .ProjectDateWrapper {
+  font-style: italic;
+}
+
+/*# sourceMappingURL=tmp.css.map */

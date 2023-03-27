@@ -35,5 +35,27 @@ export async function getCustomerData(params: GenObj = {}) {
 		return e;
 	}
 }
+export async function getSignifliers(params: GenObj = {}) {
+	try {
+		let res = await axios.get(`${apiUrl}/signiflyers`);
+		let data = res.data;
+		//console.log('in async get api, customer:', { data });
+		return data;
+	} catch (e) {
+		return e;
+	}
+}
+
+export async function getMatches(reqId) {
+	try {
+		let res = await axios.get(`${apiUrl}/findmatches/${reqId}`);
+		let data = res.data;
+		//console.log('in async get api, customer:', { data });
+		return data;
+	} catch (e) {
+		return e;
+	}
+}
+
 
 //console.log({ origin });

@@ -15,14 +15,14 @@ export async function getPrismax() {
 					needs: {},
 					compute() {
 						//@ts-ignore
-						return prisma.requirement.name.toLowerCase();
+						return prismax.requirement.name.toLowerCase();
 					},
 				},
 				filled: {
 					needs: {},
 					compute(requirement) {
 						//@ts-ignore
-						return !!requirement.signiflyierId;
+						return !!requirement.signiflyerId;
 					}
 				},
 				education: {
