@@ -5,6 +5,14 @@
 
 Design & PoC of the Signifly Case Assignment
 
+## Links
+
+GitHub Repo: https://github.com/pkirkaas/siglifly-case
+
+Rough Diagram: https://dbdiagram.io/d/64194e0e296d97641d897d20
+
+
+
 
 ## Technologies Used & Why
 

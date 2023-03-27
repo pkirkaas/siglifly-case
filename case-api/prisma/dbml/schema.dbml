@@ -1,0 +1,56 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table signiflyer {
+  id Int [pk, increment]
+  email String [unique, not null]
+  name String [not null]
+  expertise String [not null, default: '']
+  tool String [not null, default: '']
+  availableFrom DateTime [not null]
+  yrs_exp_gen Int [not null]
+  yrs_exp_sig Int [not null]
+  about String [not null, default: 'Very Good']
+  img String [not null]
+  available Boolean [not null, default: true]
+  education_key Int [not null, default: 0]
+  requirements requirement [not null]
+}
+
+Table project {
+  id Int [pk, increment]
+  from DateTime [not null]
+  to DateTime [not null]
+  name String [not null]
+  requirements requirement [not null]
+  customer customer [not null]
+  customerId Int [not null]
+}
+
+Table customer {
+  id Int [pk, increment]
+  name String [not null]
+  projects project [not null]
+  about String [not null, default: 'An important client']
+}
+
+Table requirement {
+  id Int [pk, increment]
+  project project [not null]
+  education_key Int [not null, default: 0]
+  tool String [default: '']
+  expertise String
+  yrs_exp_gen Int [not null]
+  yrs_exp_sig Int [not null]
+  about String [default: 'Details about this requirement']
+  projectId Int [not null]
+  signiflyer signiflyer
+  signiflyerId Int
+}
+
+Ref: project.customerId > customer.id
+
+Ref: requirement.projectId > project.id
+
+Ref: requirement.signiflyerId > signiflyer.id
