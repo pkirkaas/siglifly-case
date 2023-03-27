@@ -1,6 +1,7 @@
 import { useState, useEffect, Fragment } from "react";
 import {usePopup, DialogType} from "react-custom-popup";
-import { getMatches, GenObj, getCnt, isObject, typeOf, JSON5Stringify, isEmpty } from "./init.js";
+import { getMatches, GenObj, getCnt, isObject, typeOf, JSON5Stringify, isEmpty,  } from "./init.js";
+import { MenuButton } from '../Menu'
 import { dtFmt } from "pk-ts-common-lib";
 
 export function KeyFragment(...all) {
@@ -80,27 +81,6 @@ export function mkClasses(key:any=null) {
     return rowClasses;
   }
 
-export function TstPopup(props) {
-
-  const { showAlert } = usePopup();
-
-  const buttonPressed = () => {
-
-    alert("Button Pressed");
-    console.log("Button pressed - but no popup");
-    showAlert({
-      title: "Error",
-      type: DialogType.WARNING,
-      text: "A simple error alert"
-    });
-
-  }
-
-  return (
-    <div className="ReqRowWrapper"
-  onClick={buttonPressed}>Press Here</div>
-    );
-}
 
 export function Requirement(props) {
   let { tool, education, yrs_exp_gen, yrs_exp_sig, signiflyer, about, filled, expertise,signiflyerId,id   } = props;
@@ -123,7 +103,7 @@ export function Requirement(props) {
     DataRow({ ...mkClasses('tool'), label: "Tool", data: tool }),
 //    DataRow({ ...mkClasses('tool'), label: "Filled", data: FILLED }),
     (<Filled {...props} />),
-    (<FindMatches id={id} />),
+    (<FindMatches reqId={id} />),
     (<Signiflyer {...signiflyer} />)
 
   ];
@@ -165,6 +145,18 @@ export function Signiflyer(props)  {
 }
 
 function FindMatches(props) {
+  let { reqId } = props;
+
+	let matchButton = MenuButton({
+    apage: '/matching',
+    label: "Find Matches for Req",
+    params: { reqId }
+  });
+  return matchButton;
+
+}
+/*
+function FindMatches(props) {
 
   let id = props.id;
   let [ares, setAres] = useState({});
@@ -188,9 +180,6 @@ function FindMatches(props) {
   function onClick() {
     alert(`The Req is [${id}]`);
   }
-  /*
-      <RenderArr arr={ares} label="Sygnifliers" Comp={Signiflyer} />
-  */
   
 	return (
     <div onClick={onClick}>
@@ -201,6 +190,7 @@ function FindMatches(props) {
     </div>
 	)
 }
+*/
 
 /**
  */

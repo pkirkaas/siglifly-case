@@ -2,7 +2,7 @@
  * Supporting API requests
  */
 import { add } from 'date-fns';
-import {getModelIds, GenObj, prismax, PkError, prisma, refNames,  refDefs, randInt,} from './init.js';
+import {getModelIds,getById, GenObj, prismax, PkError, prisma, refNames,  refDefs, randInt,} from './init.js';
 
 export const customerIncludes = {
 	all: {
@@ -43,6 +43,11 @@ export async function getFilledReqs() {
 		include: { signiflyer: true },
 });
 	return filledReqs;
+}
+
+export async function getReq(id) {
+	let req = await getById('requirement', id);
+	return req;
 }
 
 /*

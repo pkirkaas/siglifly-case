@@ -2,7 +2,7 @@
 import  express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import { getCustomerData, findMatches, getSigniflyers, dtFmt, dbgWrite, dbgWrt } from  './init.js';
+import { getById, getReq, getCustomerData, findMatches, getSigniflyers, dtFmt, dbgWrite, dbgWrt } from  './init.js';
 import './init.js';
 const dev = process.env.NODE_ENV !== 'production';
 let PORT = process.env.PORT || '3071';
@@ -56,11 +56,15 @@ app.get('/api/signiflyers', async (req, res) => {
 app.get('/api/findmatches/:reqId', async (req, res) => {
 	let qid = req.query.reqId;
 	let id = req.params.reqId;
-	alog({ params:req.params, id, qid });
-	//let matches = await findMatches(id);
+	console.log('In get req matches - ', { qid, id });
+	//let requirement = await getReq(qid);
+	let requirement = await getById('requirement', id);
+	let matches = await findMatches(qid);
+	//let reqCnt = requirement.length;
+	let matchesCnt = matches.length;
+	alog({ requirement, matchesCnt,  qid });
 	//alog('GET /api/findmatches',{ id});
-	//res.send(matches);
-	res.send({ testing: true });
+	res.send({ matches, requirement });
 });
 app.post('/api/findmatches', async (req, res) => {
 	let params = req.body;

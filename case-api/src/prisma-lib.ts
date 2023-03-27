@@ -216,6 +216,7 @@ export async function getTableMap() {
  * @param include - optional - string, array or object for complex includes
  */
 export async function getById(model, id, include: any = null) {
+	id = parseInt(id);
 	let query: GenObj = { where: { id } };
 	let origInclude = include;
 	console.log("Entery getById - include:", { include });

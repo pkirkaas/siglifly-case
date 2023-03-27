@@ -13,11 +13,12 @@ import { CustomerPage } from './pages/CustomerPage';
 import "./scss/site.scss";
 
 export const pagesToComp = {
-  '/signiflyers': SigniflyerPage,
-  '/matching': MatchingPage,
-  '/requrement': RequirementPage,
+  //'/requrement': RequirementPage,
   '/home': HomePage,
+
+  '/signiflyers': SigniflyerPage,
 //  '/customer' : Client,
+ '/matching': MatchingPage,
 };
 
  function App(props) {

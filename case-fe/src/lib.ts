@@ -48,8 +48,9 @@ export async function getSignifliers(params: GenObj = {}) {
 
 export async function getMatches(reqId) {
 	try {
-		let res = await axios.get(`${apiUrl}/findmatches/${reqId}`);
+		let res = await axios.get(`${apiUrl}/findmatches/${reqId}?reqId=${reqId}`);
 		let data = res.data;
+		console.log("In get matches API:", { data });
 		//console.log('in async get api, customer:', { data });
 		return data;
 	} catch (e) {

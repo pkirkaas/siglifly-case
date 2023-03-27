@@ -26,9 +26,8 @@ export function HomePage() {
   
 	return (
     <div >
-      <TstComp/>
 <div>
-      <RenderArr arr={ares} label="More Clients" Comp={Client} />
+      <RenderArr arr={ares} label="Clients, Projects & Requirements" Comp={Client} />
       </div>
 
     </div>
