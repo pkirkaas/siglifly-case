@@ -6,4 +6,4 @@ export * from './pages/init.js';
 
 import { getCustomerData} from './lib.js';
 let res = await getCustomerData();
-console.log('in init', { res });
+//console.log('in init', { res });

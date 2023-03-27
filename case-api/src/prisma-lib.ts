@@ -1,9 +1,9 @@
 /**
  * Functions to support prisma data for assignment task
  */
-import { GenObj, PkError, prisma, isSubset, strIncludesAny, isEmpty } from './init.js';
+import { isObject, dtFmt, isPrimitive, GenObj, PkError, prisma, isSubset, strIncludesAny, isEmpty,  } from './init.js';
 
-import { PrismaClient, Signiflyer} from '@prisma/client'
+import { PrismaClient, } from '@prisma/client'
 
 //export const prismax = await prisma.$extends({
 export async function getPrismax() {
@@ -11,32 +11,96 @@ export async function getPrismax() {
 	let prismax = await aprisma.$extends({
 		result: {
 			requirement: {
+				model: {
+					needs: {},
+					compute() {
+						//@ts-ignore
+						return prisma.requirement.name.toLowerCase();
+					},
+				},
 				filled: {
 					needs: {},
 					compute(requirement) {
 						//@ts-ignore
 						return !!requirement.signiflyierId;
 					}
+				},
+				education: {
+					needs: {},
+					compute(requirement) {
+						//@ts-ignore
+						return educationFromId(requirement.education_key);
+					},
+				},
+				findMatches: {
+					needs: {},
+					compute(requirement) {
+						//@ts-ignore
+						return () => findMatches(requirement.id);
+					},
 				}
 
 			},
 			project: {
-				filledreqs: {
-					//@ts-ignore
-					needs: { requirements: true },
-					compute(requirements) {
+				model: {
+					needs: {},
+					compute() {
+						//@ts-ignore
+						return prisma.project.name.toLowerCase();
+					},
+				},
+				fromPretty: {
+					needs: {},
+					compute(project) {
+						//@ts-ignore
+						return dtFmt('short', project.from);
 					}
+				},
+				/*
+				education: {
+					needs: {},
+					compute(requirement) {
+						//@ts-ignore
+						return educationFromId(requirement.education_key);
+					},
 				}
-			}
+					*/
+			},
 
-		},
+			signiflyer: {
+				model: {
+					needs: {},
+					compute() {
+						//@ts-ignore
+						return prisma.signiflyer.name.toLowerCase();
+					},
+				},
+				education: {
+					needs: {},
+					compute(signiflyer) {
+						//@ts-ignore
+						return educationFromId(signiflyer.education_key);
+					},
+				},
+				availableFromPretty: {
+					needs: {},
+					compute(signiflyer) {
+						//@ts-ignore
+						return dtFmt('short', signiflyer.availableFrom);
+					}
+				},
+
+			},
+		}
 	});
 	return prismax;
 }
 
 export const prismax = await getPrismax();
 
-
+export function educationFromId(id) {
+	return refDefs.Education[id];
+}
 //export prismax;
 
 export async function getModelIds(modelName) {
@@ -52,7 +116,7 @@ export async function getModelIds(modelName) {
  * @param string|array|null tables:
  *   table name, array of table names, or empty for all
  */
-export async function clearTables(tables?:any) {
+export async function clearTables(tables?: any) {
 	if (tables && !Array.isArray(tables)) {
 		tables = [tables];
 	}
@@ -72,12 +136,40 @@ export async function clearTables(tables?:any) {
 	}
 }
 
+export async function addRelated(from: GenObj, to: GenObj) {
+	let fromName = from.model;
+	let toName = to.model;
+	let toNameId = toName + 'Id';
+	let updateQuery =
+	{
+		where: { id: from.id },
+		data: {
+			[toNameId]: to.id ,
+			}
+	};
+
+	let updateQuery2 =
+	{
+		where: { id: from.id },
+		data: {
+			[toName]: {
+				connect: [{ id: to.id }],
+			}
+		}
+	};
+	console.log(`Executing update query on [${fromName}]:`, { updateQuery });
+	//@ts-ignore
+	let res = await prismax[fromName].update(updateQuery);
+	return res;
+}
+
 export const refDefs = {
 	Tool: ['MSOffice', 'JavaScript', 'PHP',],
-	Education: ['selftaught', 'BS', 'MS', 'PhD',],
+	Education: ['none', 'selftaught', 'BS', 'MS', 'PhD',],
 	Expertise: ['Manager', 'BackendDeveloper', 'FrontendDeveloper', 'DevOps', 'UXDesigner', 'Architect', 'Sales',],
 };
 export const refNames = Object.keys(refDefs);
+export const educationKeys = Object.keys(refDefs.Education).map((el) => parseInt(el));
 export let tableMap: GenObj = {};
 
 
@@ -119,7 +211,90 @@ export async function getTableMap() {
 	return tableMap;
 };
 
+/**
+ * Get a model instance by id.
+ * @param include - optional - string, array or object for complex includes
+ */
+export async function getById(model, id, include: any = null) {
+	let query: GenObj = { where: { id } };
+	let origInclude = include;
+	console.log("Entery getById - include:", { include });
+	if (include) {
+		id = parseInt(id);
+		if (typeof include === 'string') {
+			include = [include];
+		}
+		if (Array.isArray(include)) {
+			let includeArr = include;
+			include = {};
+			for (let key of includeArr) {
+				include[key] = true;
+			}
+		}
+		if (!isObject(include)) {
+			throw new PkError(`in getById - invalid arg for 'include':`, { origInclude, include });
+		}
+		if (!('include' in include)) {
+			include = { include };
+		}
+		query.include = include.include;
+	}
+	console.log('Debugging getById include:', { include, query });
 
+	//@ts-ignore
+	return await prismax[model].findUnique(query);
+	/*
+	return await prismax[model].findUnique({
+		where: { id },
+		include
+	});
+	*/
+}
+
+/**
+ * For a requirement, return a list of potential signiflyier resources
+ * @param int | requirement instance: req
+	yrs_exp_gen  Int
+	yrs_exp_sig  Int
+ */
+export async function findMatches(req) {
+	if (isPrimitive(req)) {
+		req = await getById('requirement', req);
+	}
+	// Find project start date from req
+	let project = await getById('project', req.projectId);
+	/*
+	let project = await prismax.project.findUnique({
+		where: {
+			id: req.projectId,
+		}
+	});
+	*/
+	let from = project.from;
+	let { education_key, tool, expertise, yrs_exp_gen, yrs_exp_sig, } = req;
+	let signiflyers = await prismax.signiflyer.findMany({
+		where: {
+			education_key: {
+				gte: education_key,
+			},
+			tool,
+			expertise,
+			yrs_exp_gen: {
+				gte: yrs_exp_gen,
+			},
+			yrs_exp_sig: {
+				gte: yrs_exp_sig,
+			},
+			/*
+			availableFrom: {
+				lte: from,
+			},
+			*/
+			//	available: true,
+		}
+	});
+	return signiflyers;
+}
 /*
 export async function createRefs(inits = refInits) {
 	for (let key in inits) {

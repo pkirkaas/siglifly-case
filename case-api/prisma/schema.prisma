@@ -3,7 +3,7 @@
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["clientExtensions"]
+  previewFeatures = ["clientExtensions", "metrics"]
 }
 
 // Sometimes errors, sometimes takes forever
@@ -17,50 +17,64 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Signiflyer {
+//model Signiflyer {
+model signiflyer {
   id            Int           @id @default(autoincrement())
   email         String        @unique
   name          String
-  expertises    String        @default("")
-  tools         String        @default("")
+  expertise    String        @default("")
+  tool         String        @default("")
+  //expertises    String        @default("")
+  //tools         String        @default("")
   availableFrom DateTime
   yrs_exp_gen   Int
   yrs_exp_sig   Int
   about         String        @default("Very Good")
   img           String
+  available Boolean @default(true)
   //project       Project? @relation(fields: [projectId], references: [id])
-  education     String?
+  //education     String?
+  education_key  Int    @default(0)
   //projectId     Int?
-  requirements  Requirement[]
+  //requirements  Requirement[]
+  requirements  requirement[]
 }
 
 //Expertise: Manager BackendDeveloper FrontendDeveloper DevOps UXDesigner Architect
 
 //Tools/Technologies - MSOffice JavaScript PHP, etc
 
-model Project {
+//model Project {
+//model Project {
+model project {
   id           Int           @id @default(autoincrement())
   from         DateTime
   to           DateTime
   name         String
   //signiflyers  Signiflyer[] // The team
-  requirements Requirement[]
-  customer     Customer      @relation(fields: [customerId], references: [id])
+  requirements requirement[]
+  //customer     Customer      @relation(fields: [customerId], references: [id])
+  customer     customer      @relation(fields: [customerId], references: [id])
   customerId   Int
 }
 
-model Customer {
+//model Customer {
+model customer {
   id       Int       @id @default(autoincrement())
   name     String
-  projects Project[]
+  //projects Project[]
+  projects project[]
   about    String    @default("An important client")
 }
 
 //Resource requirements per project
-model Requirement {
+//model Requirement {
+model requirement {
   id           Int         @id @default(autoincrement())
-  project      Project     @relation(fields: [projectId], references: [id])
-  education    String?
+  //project      Project     @relation(fields: [projectId], references: [id])
+  project      project     @relation(fields: [projectId], references: [id])
+  //education    String?
+  education_key  Int    @default(0)
   tool         String?     @default("")
   expertise    String?
   yrs_exp_gen  Int
@@ -68,7 +82,8 @@ model Requirement {
   about        String?     @default("Details about this requirement")
   projectId    Int
   //signiflyers   Signiflyer[]
-  signiflyer   Signiflyer? @relation(fields: [signiflyerId], references: [id])
+  //signiflyer   Signiflyer? @relation(fields: [signiflyerId], references: [id])
+  signiflyer   signiflyer? @relation(fields: [signiflyerId], references: [id])
   signiflyerId Int?
 }
 

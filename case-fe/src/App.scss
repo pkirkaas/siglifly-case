@@ -17,6 +17,22 @@
 	display: inline-block;
 }
 
+.lrpad {
+	padding-left: 1em;
+	padding-right: 1em;
+}
+
+.lrmargin {
+	margin-left: 1em;
+	margin-right: 1em;
+
+}
+
+.lrboth  {
+	@extend .lrmargin;
+	@extend .lrpad;
+}
+
 .cname {
 	@extend .inline;
 	@extend .bpm;
@@ -66,4 +82,92 @@
 	padding: 2px;
 	width: fit-content;
 	border: solid #aaa 1px;
+}
+
+.MenuItem {
+	@extend .inline;
+	border: solid blue 1px;
+	margin-left: 2em;
+	margin-right: 2em;
+	padding-left: 2em;
+	padding-right: 2em;
+	border-radius: .5em;
+	background-color: #444;
+	color: #ffe;
+}
+.MenuLink {
+	color: #ffe;
+}
+.MenuLabel {
+	color: #ffe;
+}
+.MenuWrapper {
+	@extend .bpm;
+	background: #aaa;
+}
+
+.PageWrapper {
+	@extend .bpm;
+}
+
+.invert {
+	background: black;
+	color: white;
+}
+
+.unvert {
+	background: white;
+	color: black;
+}
+
+.invr {
+	background: #400;
+	color: #eef;
+}
+
+.invb {
+	background: #004;
+	color: #fee;
+}
+
+.border {
+	border: solid #aaa 1px;
+	border-radius: .5em;
+}
+
+.LabelRowWrapper {
+	@extend .lrboth;
+	@extend .border;
+	background: #eff;
+
+
+}
+
+.ProjectLabelWrapper {
+	@extend .LIWrapperBold;
+}
+
+.ProjectDateWrapper {
+	@extend .LIWrapperItalic;
+}
+
+.LabelItemWrapper {
+	@extend .inline;
+	@extend .lrboth;
+	@extend .border;
+	background: #aaf;
+}
+
+.ProjectName {
+	@extend .LabelItemWrapper;
+}
+
+.LIWrapperBold {
+	@extend .LabelItemWrapper;
+	font-weight: bold;
+}
+
+.LIWrapperItalic {
+	@extend .LabelItemWrapper;
+	font-style: italic;
 }

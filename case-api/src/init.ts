@@ -1,6 +1,6 @@
 export * from 'pk-ts-sqlite-lib';
 import { getDirname, slashPath } from 'pk-ts-sqlite-lib';
-import { PrismaClient, Signiflyer} from '@prisma/client'
+import { PrismaClient, } from '@prisma/client'
 //export Signiflyer;
 export const prisma = await new PrismaClient();
 export const projectDir = getDirname(import.meta.url, '..');

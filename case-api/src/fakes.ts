@@ -4,7 +4,7 @@
  * populated first
  */
 import { add } from 'date-fns';
-import {getModelIds, PkError, prisma, refNames,  refDefs, randInt,} from './init.js';
+import {dbgWrt, getModelIds, getRandEls,  educationKeys, PkError, prisma, refNames,  refDefs, randInt,} from './init.js';
 
 import { faker } from '@faker-js/faker';
 export const imgUrls = [
@@ -51,18 +51,22 @@ export async function fSygData(cnt=1) {
 		//console.log(`In mk usr data - refVals?`, { refVals });
 		let toolCnt = randInt(4);
 		let expCnt = randInt(3);
-		let fromTo = getRandDateRange();
+		let fromTo = getRandDateRange(4);
 		let sData = {
 			availableFrom: fromTo.from,
 			name: faker.name.firstName(),
 			email: faker.internet.email(),
-			tools: faker.helpers.arrayElements(refDefs.Tool,toolCnt).join(','),
-			expertises: faker.helpers.arrayElements(refDefs.Expertise,expCnt).join(','),
-			education: faker.helpers.arrayElement(refDefs.Education),
+			//tools: faker.helpers.arrayElements(refDefs.Tool,toolCnt).join(','),
+			//expertises: faker.helpers.arrayElements(refDefs.Expertise,expCnt).join(','),
+			tool: faker.helpers.arrayElement(refDefs.Tool),
+			expertise: faker.helpers.arrayElement(refDefs.Expertise),
+			//educationId: faker.helpers.arrayElement(refDefs.Education.keys()),
+			education_key: getRandEls(educationKeys),
 			yrs_exp_gen: randInt(2, 10),
 			yrs_exp_sig: randInt(1, 3),
 			about: faker.lorem.paragraph(),
 			img: faker.helpers.arrayElement(imgUrls),
+			available: true,
 		};
 		fdArr.push(sData);
 	}
@@ -73,7 +77,7 @@ export async function fProjectData(cnt = 9) {
 	let cids = await getModelIds('customer');
 	let fpdArr = [];
 	for (let i = 0; i < cnt; i++) {
-		let fromTo = getRandDateRange();
+		let fromTo = getRandDateRange(30);
 
 		let data = {
 			customerId : faker.helpers.arrayElement(cids),
@@ -109,17 +113,17 @@ export function getRandDateRange(scale = 5) {
 	return { from, to };
 }
 
-export async function fReqdata(maxReqs = 10) {
+export async function fReqdata(maxReqs = 15) {
 	let dataArr = [];
 	let pids = await getModelIds('project');
 	//for (let i = 0; i < cnt; i++) {
 	for (let projectId of pids) {
 		let reqCnt = randInt(3, maxReqs);
 		let hasManager = false;
-		let expertises = refDefs.Expertise;
+		let expertises = [...refDefs.Expertise];
 		for (let i = 0; i < reqCnt; i++) {
 			if (hasManager) {
-				expertises = expertises.filter((el) => {el !=='Manager';});
+				expertises = expertises.filter((el) => {return el !=='Manager';});
 			}
 			let expertise = faker.helpers.arrayElement(expertises);
 			if (expertise === 'Manager') {
@@ -127,15 +131,18 @@ export async function fReqdata(maxReqs = 10) {
 			}
 			let data = {
 				projectId,
-				education: faker.helpers.arrayElement(refDefs.Education),
+				//education: faker.helpers.arrayElement(refDefs.Education),
+			 education_key: getRandEls(educationKeys),
 				expertise,
 				tool: faker.helpers.arrayElement(refDefs.Tool),
-				yrs_exp_gen: randInt(2, 10),
-				yrs_exp_sig: randInt(1, 3),
+				yrs_exp_gen: randInt(1,4),
+				yrs_exp_sig: randInt(1, 2),
 				about: faker.hacker.adjective(),
 			}
 			dataArr.push(data);
 		}
 	}
+	let len = dataArr.length;
+	dbgWrt({ dataArr, len }, 'mkReqData');
 	return dataArr;
 }

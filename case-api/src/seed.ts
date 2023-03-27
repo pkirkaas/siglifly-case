@@ -1,12 +1,12 @@
 //import { PrismaClient } from '@prisma/client';
 import {
-	refDefs, fSygData, prisma, fCustomerData, fProjectData,
-	GenObj, getTableMap, clearTables,fReqdata,
+	dbgWrt, refDefs, fSygData, prisma, fCustomerData, fProjectData,
+	GenObj, getTableMap, clearTables,fReqdata, getRandEls,
 } from './init.js';
 
 
 
-export async function mkFakeSygs(cnt = 15) {
+export async function mkFakeSygs(cnt = 100) {
 	//await prisma.signiflyer.deleteMany();
 	let recs = [];
 	let dataArr = await fSygData(cnt);
@@ -17,7 +17,7 @@ export async function mkFakeSygs(cnt = 15) {
 	return recs;
 }
 
-export async function mkFakeCustomers(cnt = 3) {
+export async function mkFakeCustomers(cnt = 4) {
 	//@ts-ignore
 	//await prisma.customer.deleteMany();
 	let recs = [];
@@ -33,7 +33,7 @@ export async function mkFakeCustomers(cnt = 3) {
 /**
  * fkCustomers have to exist first
  */
-export async function mkFakeProjects(cnt = 10) {
+export async function mkFakeProjects(cnt = 15) {
 	let recs = [];
 	let dataArr = await fProjectData(cnt);
 	for (let data of dataArr) {
@@ -42,19 +42,33 @@ export async function mkFakeProjects(cnt = 10) {
 	}
 }
 
-export async function mkFakeReqs(cnt = 10) {
+export async function mkFakeReqs(cnt = 15) {
 	let recs = [];
 	let dataArr = await fReqdata(cnt);
 	for (let data of dataArr) {
 		//@ts-ignore
 		recs.push(await prisma.requirement.create({ data }));
 	}
+	let len = recs.length;
+	console.log("NumRecs seeded:", len);
+	dbgWrt({ recs, len }, 'recSeed');
 }
+
+// Lets add SOME Signiflyers to the reqs:
+
+async function addSomeSygs () {
+	let allReqs = await prisma.requirement.findMany({});
+}
+
+
+
+
+
 async function main() {
 	//await clearTables();
-	let users = await mkFakeSygs(22);
-	let clients = await mkFakeCustomers();
-	let projects = await mkFakeProjects();
+	let users = await mkFakeSygs(120);
+	let clients = await mkFakeCustomers(5);
+	let projects = await mkFakeProjects(8);
 	let reqs = await mkFakeReqs();
 }
 
