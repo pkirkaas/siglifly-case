@@ -199,7 +199,7 @@ export function Filled(props) {
   let reqId = props.id;
   let filledClass = filled ? 'isFilled' : 'isNotFilled';
   let FILLED = filled ? "FILLED BY" : "UNFILLED"
-  return (<div className={filledClass}>{FILLED} {reqId}</div>);
+  return (<div className={filledClass}>{FILLED}</div>);
 }
 
 export function Client(props) {
