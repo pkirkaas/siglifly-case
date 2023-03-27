@@ -6,9 +6,9 @@ generator client {
   previewFeatures = ["clientExtensions", "metrics"]
 }
 
-generator dbml {
-  provider = "prisma-dbml-generator"
-}
+//generator dbml {
+ // provider = "prisma-dbml-generator"
+//}
 
 // Sometimes errors, sometimes takes forever
 // Nice idea - retry before final delivery
