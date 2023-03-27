@@ -56,19 +56,30 @@ app.get('/api/signiflyers', async (req, res) => {
 app.get('/api/findmatches/:reqId', async (req, res) => {
 	let qid = req.query.reqId;
 	let id = req.params.reqId;
+	id = parseInt(id);
+	if (!id || Number.isNaN(id)) {
+		console.error("ID IS NOT VALID");
+		res.send({ ID: "Not Valid" });
+	}
 	console.log('In get req matches - ', { qid, id });
-	//let requirement = await getReq(qid);
-	let requirement = await getById('requirement', id);
-	let matches = await findMatches(qid);
-	//let reqCnt = requirement.length;
-	let matchesCnt = matches.length;
-	alog({ requirement, matchesCnt,  qid });
-	//alog('GET /api/findmatches',{ id});
-	res.send({ matches, requirement });
+	try {
+		//let requirement = await getReq(qid);
+		let requirement = await getById('requirement', id);
+		let matches = await findMatches(qid);
+		//let reqCnt = requirement.length;
+		let matchesCnt = matches.length;
+		alog({ requirement, matchesCnt, qid });
+		//alog('GET /api/findmatches',{ id});
+		res.send({ matches, requirement });
+	} catch (e) {
+		console.error("Error in findmatches:", { id, e });
+		res.send({ ID: "Not Valid" });
+	}
 });
 app.post('/api/findmatches', async (req, res) => {
 	let params = req.body;
 	let id = params.reqId;
+
 	let matches = await findMatches(id);
 	alog('POST /api/findmatches',{ params});
 	res.send(matches);
