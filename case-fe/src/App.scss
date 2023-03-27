@@ -57,6 +57,27 @@
 	background: #effeff;
 }
 
+.PageTitle {
+	border: solid black 1px;
+	text-align: center;
+	font-size: xx-large;
+	color: #400;
+	padding: .5em;
+	font-weight: bold;
+	margin-bottom: 1em;
+	background: #eee;
+}
+
+.RenderArrLabel {
+	@extend .border;
+	@extend .invert;
+	font-size: x-large;
+	font-weight: bold;
+	margin-top: 2em;
+	padding: 1em;
+	text-align: center;
+}
+
 .prewrap {
 	background: #eff;
 	margin: 2px;

@@ -241,7 +241,8 @@ export function RenderArr(props) {
   let label = props.label;
   let Comp = props.Comp;
   let arr: any[] = props.arr;
-  let labelClass = props.labelClass ?? "clabel";
+  //let labelClass = props.labelClass ?? "clabel";
+  let labelClass = props.labelClass ?? "RenderArrLabel";
   let wrapClass = props.wrapClass ?? "bpm";
   let arrClass = props.arrClass ?? "bpm2";
   let compClass = props.compClass ?? "crow";

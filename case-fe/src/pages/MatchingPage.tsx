@@ -8,7 +8,7 @@ console.log({ urlParams, reqId });
 export function MatchingPage() {
 	return (
 		<div>
-		<h1>Sigiflyers Matching Requiremens</h1>
+		<div className='PageTitle'>Sigiflyers Matching The Requirement</div>
     <FindMatches />
 		</div>
 	);
@@ -42,14 +42,16 @@ export function Matches(props) {
   let resKeys = Object.keys(res);
   let signiflyers = res.matches;
   let requirement = res.requirement;
+  if (!signiflyers) {
+    return (<h1>...Waiting</h1>)
+  }
 
-  console.log({ resKeys, keys, props });
 	return (
     <div>
-      <h1>Requirement:</h1>
+      <h1 className='RenderArrLabel'>Requirement:</h1>
       <Requirement {...requirement} />
       <div>
-        <RenderArr arr={signiflyers} label="Sygnifliers" Comp={Signiflyer} />
+        <RenderArr arr={signiflyers} label="Sygnifliers Meeting or Exceeding Requirements" Comp={Signiflyer} />
       </div>
     </div>
   );
