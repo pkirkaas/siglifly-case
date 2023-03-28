@@ -91,11 +91,11 @@ The front end is in the case-fe subdirectory of the repository.
 
 The back end is in the case-api subdirectory.
 
-Both need to be initialized with "npm install" 
+Both need to be initialized with `npm install` 
 
-On first installation, the API needs to initialize and seed the test database. Initialize with "npm run initdb" 
+On first installation, the API needs to initialize and seed the test database. Initialize with `npm run initdb` 
 
-Both the front end and  back end can be started with "npm run dev"
+Both the front end and  back end can be started with `npm run dev`
 
 Because tje front end has to talk to the back end on a different URL, every new deployment with require some set-up and configuring of ports & API URLs.
 
