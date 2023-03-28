@@ -67,6 +67,18 @@ This is the most the time consuming aspect of the project, but also the most cri
 
 It's particularly challenging because while there are many wrong approaches, there is never just one "right" approach. Everything involves trade-offs, and many alternatives have to be considered and weighed.
 
+## General Approach & Philosophy
+
+When starting a new project, it's typical to use a previous project as a template.
+
+There are several downsides to that approach. We might not always need any of the new features, but there are constant security risks caught and fixed. Every time you reinstall / build a 2 year old NPM project, it is almost guaranteed to generate a dozen critical security warnings.
+
+Also, if the goal is for a project to run and be maintained for many years, it's a lot easier to upgrade later versions.  
+
+Its really advisable to use the latest stable releases of all the technologies. 
+
+
+
 
 
 ### ✨ [Demo](http://signifly.levitatingwaters.com)
