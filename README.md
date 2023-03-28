@@ -73,6 +73,20 @@ It's particularly challenging because while there are many wrong approaches, the
 
 ## Install
 
+I explored several alternatives to serve both the front-end an back end from the same service, but ultimately they were too limited. So the application consists of 2 components & 2 server instances.
+
+The front end is in the case-fe subdirectory of the repository.
+
+The back end is in the case-api subdirectory.
+
+Both need to be initialized with "npm install" 
+
+On first installation, the API needs to initialize and seed the test database. Initialize with "npm run initdb" 
+
+Both the front end and  back end can be started with "npm run dev"
+
+Because tje front end has to talk to the back end on a different URL, every new deployment with require some set-up and configuring of ports & API URLs.
+
 This demo can be installed and run on any of Windows, Linux or MacOS - **BUT** it *DOES* require `bash` as the command shell.
 
 So to run/build on windows, must have a bash implementation in the path - like cygwin or git-bash.
